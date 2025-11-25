@@ -300,4 +300,11 @@ inline void from_json(const nlohmann::json& j, FeeHistory& f)
     j.at("gasUsedRatio").get_to(f.gasUsedRatio);
 }
 
+
+struct Account
+{
+    std::string address;
+    std::string privateKey;
+};
+
 }  // namespace web3
