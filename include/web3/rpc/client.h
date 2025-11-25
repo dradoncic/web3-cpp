@@ -30,35 +30,3 @@ class HTTPClient : public jsonrpccxx::IClientConnector
 };
 
 } // namespace web3::rpc
-
-// namespace eth
-// {
-
-// class Client
-// {
-//    public:
-//     Client(const std::string& host, int port)
-//         : connector(host, port), client(connector, jsonrpccxx::version::v2)
-//     {
-//     }
-//     ~Client() = default;
-
-//    private:
-//     HTTPClient connector;
-//     jsonrpccxx::JsonRpcClient client;
-// };
-
-// }  // namespace eth
-
-// namespace anvil
-// {
-
-// class Client : public eth::Client
-// {
-//    public:
-//     Client(const std::string& host, int port) : eth::Client(host, port)
-//     {
-//     }
-// };
-
-// }  // namespace anvil

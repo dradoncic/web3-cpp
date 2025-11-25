@@ -1,10 +1,11 @@
 #pragma once
 
+#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
-#include <nlohmann/json.hpp>
 
-namespace web3 {
+namespace web3
+{
 
 struct Transaction
 {
@@ -48,8 +49,7 @@ inline void to_json(nlohmann::json& json, const Transaction& transaction)
         {"type", transaction.type},
         {"v", transaction.v},
         {"r", transaction.r},
-        {"s", transaction.s}
-    };
+        {"s", transaction.s}};
 }
 
 inline void from_json(const nlohmann::json& json, Transaction& transaction)
@@ -74,7 +74,6 @@ inline void from_json(const nlohmann::json& json, Transaction& transaction)
     json.at("s").get_to(transaction.s);
 }
 
-
 struct Withdrawal
 {
     std::string index;
@@ -85,12 +84,10 @@ struct Withdrawal
 
 inline void to_json(nlohmann::json& j, const Withdrawal& w)
 {
-    j = nlohmann::json{
-        {"index", w.index},
-        {"validatorIndex", w.validatorIndex},
-        {"address", w.address},
-        {"amount", w.amount}
-    };
+    j = nlohmann::json{{"index", w.index},
+                       {"validatorIndex", w.validatorIndex},
+                       {"address", w.address},
+                       {"amount", w.amount}};
 }
 
 inline void from_json(const nlohmann::json& j, Withdrawal& w)
@@ -101,59 +98,56 @@ inline void from_json(const nlohmann::json& j, Withdrawal& w)
     j.at("amount").get_to(w.amount);
 }
 
-
 struct Block
 {
-  std::string baseFeePerGas;
-  std::string difficulty;
-  std::string extraData;
-  std::string gasLimit;
-  std::string gasUsed;
-  std::string hash;
-  std::string logsBloom;
-  std::string miner;
-  std::string mixHash;
-  std::string nonce;
-  std::string number;
-  std::string parentHash;
-  std::string receiptsRoot;
-  std::string sha3Uncles;
-  std::string size;
-  std::string stateRoot;
-  std::string timestamp;
-  std::vector<Transaction> transactions;
-  std::string transactionsRoot;
-  std::vector<std::string> uncles;
-  std::vector<Withdrawal> withdrawals;
-  std::string withdrawalsRoot;
+    std::string baseFeePerGas;
+    std::string difficulty;
+    std::string extraData;
+    std::string gasLimit;
+    std::string gasUsed;
+    std::string hash;
+    std::string logsBloom;
+    std::string miner;
+    std::string mixHash;
+    std::string nonce;
+    std::string number;
+    std::string parentHash;
+    std::string receiptsRoot;
+    std::string sha3Uncles;
+    std::string size;
+    std::string stateRoot;
+    std::string timestamp;
+    std::vector<Transaction> transactions;
+    std::string transactionsRoot;
+    std::vector<std::string> uncles;
+    std::vector<Withdrawal> withdrawals;
+    std::string withdrawalsRoot;
 };
 
 inline void to_json(nlohmann::json& j, const Block& b)
 {
-    j = nlohmann::json{
-        {"number", b.number},
-        {"hash", b.hash},
-        {"parentHash", b.parentHash},
-        {"nonce", b.nonce},
-        {"sha3Uncles", b.sha3Uncles},
-        {"logsBloom", b.logsBloom},
-        {"transactionsRoot", b.transactionsRoot},
-        {"stateRoot", b.stateRoot},
-        {"receiptsRoot", b.receiptsRoot},
-        {"miner", b.miner},
-        {"mixHash", b.mixHash},
-        {"difficulty", b.difficulty},
-        {"extraData", b.extraData},
-        {"size", b.size},
-        {"gasLimit", b.gasLimit},
-        {"gasUsed", b.gasUsed},
-        {"timestamp", b.timestamp},
-        {"transactions", b.transactions},
-        {"uncles", b.uncles},
-        {"baseFeePerGas", b.baseFeePerGas},
-        {"withdrawals", b.withdrawals},
-        {"withdrawalsRoot", b.withdrawalsRoot}
-    };
+    j = nlohmann::json{{"number", b.number},
+                       {"hash", b.hash},
+                       {"parentHash", b.parentHash},
+                       {"nonce", b.nonce},
+                       {"sha3Uncles", b.sha3Uncles},
+                       {"logsBloom", b.logsBloom},
+                       {"transactionsRoot", b.transactionsRoot},
+                       {"stateRoot", b.stateRoot},
+                       {"receiptsRoot", b.receiptsRoot},
+                       {"miner", b.miner},
+                       {"mixHash", b.mixHash},
+                       {"difficulty", b.difficulty},
+                       {"extraData", b.extraData},
+                       {"size", b.size},
+                       {"gasLimit", b.gasLimit},
+                       {"gasUsed", b.gasUsed},
+                       {"timestamp", b.timestamp},
+                       {"transactions", b.transactions},
+                       {"uncles", b.uncles},
+                       {"baseFeePerGas", b.baseFeePerGas},
+                       {"withdrawals", b.withdrawals},
+                       {"withdrawalsRoot", b.withdrawalsRoot}};
 }
 
 inline void from_json(const nlohmann::json& j, Block& b)
@@ -182,8 +176,8 @@ inline void from_json(const nlohmann::json& j, Block& b)
     j.at("withdrawalsRoot").get_to(b.withdrawalsRoot);
 }
 
-
-struct Log {
+struct Log
+{
     std::string logIndex;
     bool removed = false;
 
@@ -200,24 +194,22 @@ struct Log {
 
 inline void to_json(nlohmann::json& json, const Log& log)
 {
-    json = nlohmann::json{
-        {"logIndex", log.logIndex},
-        {"removed", log.removed},
-        {"blockNumber", log.blockNumber},
-        {"blockTimestamp", log.blockTimestamp},
-        {"blockHash", log.blockHash},
-        {"transactionHash", log.transactionHash},
-        {"transactionIndex", log.transactionIndex},
-        {"address", log.address},
-        {"data", log.data},
-        {"topics", log.topics}
-    };
+    json = nlohmann::json{{"logIndex", log.logIndex},
+                          {"removed", log.removed},
+                          {"blockNumber", log.blockNumber},
+                          {"blockTimestamp", log.blockTimestamp},
+                          {"blockHash", log.blockHash},
+                          {"transactionHash", log.transactionHash},
+                          {"transactionIndex", log.transactionIndex},
+                          {"address", log.address},
+                          {"data", log.data},
+                          {"topics", log.topics}};
 }
 
 inline void from_json(const nlohmann::json& json, Log& log)
 {
     json.at("logIndex").get_to(log.logIndex);
-    json.at("address").get_to (log.address);
+    json.at("address").get_to(log.address);
     json.at("topics").get_to(log.topics);
     json.at("data").get_to(log.data);
     json.at("blockNumber").get_to(log.blockNumber);
@@ -229,7 +221,6 @@ inline void from_json(const nlohmann::json& json, Log& log)
     if (json.contains("removed"))
         json.at("removed").get_to(log.removed);
 }
-
 
 struct Receipt
 {
@@ -251,22 +242,20 @@ struct Receipt
 
 inline void to_json(nlohmann::json& j, const Receipt& r)
 {
-    j = nlohmann::json{
-        {"blockHash", r.blockHash},
-        {"blockNumber", r.blockNumber},
-        {"contractAddress", r.contractAddress},
-        {"cumulativeGasUsed", r.cumulativeGasUsed},
-        {"effectiveGasPrice", r.effectiveGasPrice},
-        {"from", r.from},
-        {"gasUsed", r.gasUsed},
-        {"logs", r.logs},
-        {"logsBloom", r.logsBloom},
-        {"status", r.status},
-        {"to", r.to},
-        {"transactionHash", r.transactionHash},
-        {"transactionIndex", r.transactionIndex},
-        {"type", r.type}
-    };
+    j = nlohmann::json{{"blockHash", r.blockHash},
+                       {"blockNumber", r.blockNumber},
+                       {"contractAddress", r.contractAddress},
+                       {"cumulativeGasUsed", r.cumulativeGasUsed},
+                       {"effectiveGasPrice", r.effectiveGasPrice},
+                       {"from", r.from},
+                       {"gasUsed", r.gasUsed},
+                       {"logs", r.logs},
+                       {"logsBloom", r.logsBloom},
+                       {"status", r.status},
+                       {"to", r.to},
+                       {"transactionHash", r.transactionHash},
+                       {"transactionIndex", r.transactionIndex},
+                       {"type", r.type}};
 }
 
 inline void from_json(const nlohmann::json& j, Receipt& r)
@@ -287,7 +276,6 @@ inline void from_json(const nlohmann::json& j, Receipt& r)
     j.at("type").get_to(r.type);
 }
 
-
 struct FeeHistory
 {
     std::string oldestBlock;
@@ -298,12 +286,10 @@ struct FeeHistory
 
 inline void to_json(nlohmann::json& j, const FeeHistory& f)
 {
-    j = {
-        {"oldestBlock", f.oldestBlock},
-        {"reward", f.reward},
-        {"baseFeePerGas", f.baseFeePerGas},
-        {"gasUsedRatio", f.gasUsedRatio}
-    };
+    j = {{"oldestBlock", f.oldestBlock},
+         {"reward", f.reward},
+         {"baseFeePerGas", f.baseFeePerGas},
+         {"gasUsedRatio", f.gasUsedRatio}};
 }
 
 inline void from_json(const nlohmann::json& j, FeeHistory& f)
@@ -314,4 +300,4 @@ inline void from_json(const nlohmann::json& j, FeeHistory& f)
     j.at("gasUsedRatio").get_to(f.gasUsedRatio);
 }
 
-} // namespace web3
+}  // namespace web3
