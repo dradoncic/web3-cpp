@@ -1,12 +1,12 @@
 #pragma once
 
-#include <httplib.h>
+#include <cpp-httplib/httplib.h>
 
 #include <jsonrpccxx/client.hpp>
 #include <jsonrpccxx/iclientconnector.hpp>
 #include <string>
 
-#include "jsonrpccxx/common.hpp"
+namespace web3::rpc {
 
 class HTTPClient : public jsonrpccxx::IClientConnector
 {
@@ -29,34 +29,36 @@ class HTTPClient : public jsonrpccxx::IClientConnector
     httplib::Client client;
 };
 
-namespace eth
-{
+} // namespace web3::rpc
 
-class Client
-{
-   public:
-    Client(const std::string& host, int port)
-        : connector(host, port), client(connector, jsonrpccxx::version::v2)
-    {
-    }
-    ~Client() = default;
+// namespace eth
+// {
 
-   private:
-    HTTPClient connector;
-    jsonrpccxx::JsonRpcClient client;
-};
+// class Client
+// {
+//    public:
+//     Client(const std::string& host, int port)
+//         : connector(host, port), client(connector, jsonrpccxx::version::v2)
+//     {
+//     }
+//     ~Client() = default;
 
-}  // namespace eth
+//    private:
+//     HTTPClient connector;
+//     jsonrpccxx::JsonRpcClient client;
+// };
 
-namespace anvil
-{
+// }  // namespace eth
 
-class Client : public eth::Client
-{
-   public:
-    Client(const std::string& host, int port) : eth::Client(host, port)
-    {
-    }
-};
+// namespace anvil
+// {
 
-}  // namespace anvil
+// class Client : public eth::Client
+// {
+//    public:
+//     Client(const std::string& host, int port) : eth::Client(host, port)
+//     {
+//     }
+// };
+
+// }  // namespace anvil
