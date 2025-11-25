@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "rpc/client.h"
+#include "core/client.h"
 #include "types/request.h"
 #include "types/response.h"
 
