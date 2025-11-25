@@ -31,7 +31,7 @@ class ContractMethod
     std::string name_;
     std::string stateMutability_;
     nlohmann::json abi_;
-    web3::eth::RPC rpc_;
+    web3::eth::RPC& rpc_;
     std::vector<std::string> parameters_;
 };
 
@@ -48,6 +48,11 @@ class Contract
                               const std::string& from, web3::eth::RPC& rpc);
 
     std::string address() const;
+
+   private:
+    std::string address_;
+    nlohmann::json abi_;
+    web3::eth::RPC& rpc;
 };
 
 }  // namespace web3::eth

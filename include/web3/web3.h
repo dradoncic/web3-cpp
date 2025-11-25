@@ -21,10 +21,17 @@ public:
 
     anvil::Anvil& anvil();
 
+    RPCType type() const { return type_; }
+
 private:
+    RPCType type_;
+    web3::rpc::HTTPClient connector_;
+
+    web3::eth::RPC eth_rpc_;
+    web3::anvil::RPC anvil_rpc_;
+
     eth::Eth eth_;
     anvil::Anvil anvil_;
-    rpc::HTTPClient connector_;
 };
 
 

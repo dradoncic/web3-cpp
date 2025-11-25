@@ -56,7 +56,7 @@ inline void from_json(const nlohmann::json& json, Transaction& transaction)
 {
     json.at("blockHash").get_to(transaction.blockHash);
     json.at("blockNumber").get_to(transaction.blockNumber);
-    json.at("chainId").get_to(transaction.blockNumber);
+    json.at("chainId").get_to(transaction.chainId);
     json.at("from").get_to(transaction.from);
     json.at("gas").get_to(transaction.gas);
     json.at("gasPrice").get_to(transaction.gasPrice);

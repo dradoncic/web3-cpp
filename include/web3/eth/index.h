@@ -20,7 +20,7 @@ public:
     Contract contract(const std::string& address, nlohmann::json& abi);
 
 private:
-    RPC rpc_;
+    RPC& rpc_;
     Accounts accounts_;
 };
 

@@ -37,7 +37,7 @@ class RPC
 
    protected:
     jsonrpccxx::JsonRpcClient client_;
-    web3::rpc::HTTPClient connector_;
+    web3::rpc::HTTPClient& connector_;
 };
 
 }  // namespace web3::eth

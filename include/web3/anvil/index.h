@@ -20,7 +20,7 @@ class Anvil
                                  nlohmann::json& abi);
 
    private:
-    RPC rpc_;
+    RPC& rpc_;
     web3::eth::Accounts accounts_;
 };
 
