@@ -18,6 +18,29 @@ struct Transaction
     std::string nonce;
 };
 
+inline void to_json(nlohmann::json& j, const Transaction& t)
+{
+    j = nlohmann::json{
+        {"from", t.from},
+        {"to", t.to},
+        {"gas", t.gas},
+        {"gasPrice", t.gasPrice},
+        {"value", t.value},
+        {"data", t.data},
+        {"nonce", t.nonce}
+    };
+}
+
+inline void from_json(const nlohmann::json& j, Transaction& t)
+{
+    j.at("from").get_to(t.from);
+    j.at("to").get_to(t.to);
+    j.at("gas").get_to(t.gas);
+    j.at("gasPrice").get_to(t.gasPrice);
+    j.at("value").get_to(t.value);
+    j.at("data").get_to(t.data);
+    j.at("nonce").get_to(t.nonce);
+}
 
 struct Account
 {

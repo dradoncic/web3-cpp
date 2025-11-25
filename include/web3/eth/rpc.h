@@ -20,6 +20,7 @@ class RPC
     {
     }
 
+    std::string blockNumber();
     web3::type::response::Block getBlock(const std::string& blockNumber);
     web3::type::response::Transaction getTransaction(const std::string& hash);
 
@@ -34,7 +35,7 @@ class RPC
     std::string sendTransaction(const std::string& t);
     std::string call(const web3::type::request::Transaction& t);
 
-   private:
+   protected:
     jsonrpccxx::JsonRpcClient client_;
     web3::rpc::HTTPClient connector_;
 };

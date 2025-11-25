@@ -22,7 +22,7 @@ class Wallet
     std::map<std::string, web3::type::request::Account> accounts_;
 };
 
-class Account
+class Accounts
 {
    public:
     web3::type::request::Account create();
