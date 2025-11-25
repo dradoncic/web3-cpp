@@ -29,7 +29,6 @@ class Account
     web3::type::request::Account privateKeyToAccount(
         const std::string& privateKey);
 
-    std::string sign(const std::string& data, const std::string& privateKey);
     std::string signTransaction(const web3::type::request::Transaction& tx,
                                 const std::string& privateKey);
 

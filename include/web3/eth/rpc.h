@@ -1,5 +1,6 @@
 #pragma once
 
+#include <jsonrpccxx/client.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -13,7 +14,9 @@ namespace web3::eth
 class RPC
 {
    public:
-    explicit RPC(web3::rpc::HTTPClient connector) : connector_{connector}
+    explicit RPC(web3::rpc::HTTPClient& connector)
+        : connector_{connector},
+          client_{jsonrpccxx::JsonRpcClient(connector, jsonrpccxx::version::v2)}
     {
     }
 
@@ -32,6 +35,7 @@ class RPC
     std::string call(const web3::type::request::Transaction& t);
 
    private:
+    jsonrpccxx::JsonRpcClient client_;
     web3::rpc::HTTPClient connector_;
 };
 
