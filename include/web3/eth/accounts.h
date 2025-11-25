@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-#include "web3/types.h"
+#include "types/request.h"
 
 namespace web3::eth
 {
@@ -11,25 +11,26 @@ namespace web3::eth
 class Wallet
 {
    public:
-    void add(const web3::Account& account);
+    void add(const web3::type::request::Account& account);
     void remove(const std::string& address);
     void clear();
 
-    web3::Account get(const std::string& address);
-    const std::map<std::string, web3::Account> getAll() const;
+    web3::type::request::Account get(const std::string& address);
+    const std::map<std::string, web3::type::request::Account> getAll() const;
 
    private:
-    std::map<std::string, web3::Account> accounts_;
+    std::map<std::string, web3::type::request::Account> accounts_;
 };
 
 class Account
 {
    public:
-    web3::Account create();
-    web3::Account privateKeyToAccount(const std::string& privateKey);
+    web3::type::request::Account create();
+    web3::type::request::Account privateKeyToAccount(
+        const std::string& privateKey);
 
     std::string sign(const std::string& data, const std::string& privateKey);
-    std::string signTransaction(const web3::Transaction& tx,
+    std::string signTransaction(const web3::type::request::Transaction& tx,
                                 const std::string& privateKey);
 
     Wallet& wallet()

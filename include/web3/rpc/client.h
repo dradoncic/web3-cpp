@@ -1,32 +1,28 @@
 #pragma once
 
-#include <cpp-httplib/httplib.h>
+#include <curl/curl.h>
 
-#include <jsonrpccxx/client.hpp>
 #include <jsonrpccxx/iclientconnector.hpp>
 #include <string>
 
-namespace web3::rpc {
+namespace web3::rpc
+{
 
 class HTTPClient : public jsonrpccxx::IClientConnector
 {
    public:
-    explicit HTTPClient(const std::string& host, int port)
-        : client(host.c_str(), port) {};
+    HTTPClient(const std::string& host, int port);
 
-    std::string Send(const std::string& request) override
-    {
-        auto res = client.Post("/jsonrpc", request, "application/json");
-        if (!res || res->status != 200)
-        {
-            throw jsonrpccxx::JsonRpcException(
-                -32003, "Client Connection Error - Recieved Status Not 200 ");
-        }
-        return res->body;
-    }
+    ~HTTPClient() override;
+
+    std::string Send(const std::string& request) override;
 
    private:
-    httplib::Client client;
+    static size_t WriteCallback(void* contents, size_t size, size_t nmemb,
+                                void* userp);
+
+    std::string host_;
+    int port_;
 };
 
-} // namespace web3::rpc
+}  // namespace web3::rpc

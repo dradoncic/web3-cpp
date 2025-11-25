@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace web3
+namespace web3::type::response
 {
 
 struct Transaction
@@ -300,11 +300,28 @@ inline void from_json(const nlohmann::json& j, FeeHistory& f)
     j.at("gasUsedRatio").get_to(f.gasUsedRatio);
 }
 
-
 struct Account
 {
-    std::string address;
-    std::string privateKey;
+    std::string codeHash;
+    std::string storageRoot;
+    std::string balance;
+    std::string nonce;
 };
 
-}  // namespace web3
+inline void to_json(nlohmann::json& j, const Account& a)
+{
+    j = nlohmann::json{{"codeHash", a.codeHash},
+                       {"storageRoot", a.storageRoot},
+                       {"balance", a.balance},
+                       {"nonce", a.nonce}};
+}
+
+inline void from_json(const nlohmann::json& j, Account& a)
+{
+    j.at("codeHash").get_to(a.codeHash);
+    j.at("storageRoot").get_to(a.storageRoot);
+    j.at("balance").get_to(a.balance);
+    j.at("nonce").get_to(a.nonce);
+}
+
+}  // namespace web3::type::response

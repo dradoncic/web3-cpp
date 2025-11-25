@@ -29,10 +29,9 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 find_package(nlohmann_json REQUIRED)
+find_package(CURL REQUIRED)
 
 add_subdirectory(submodule/json-rpc)
-add_subdirectory(submodule/httplib)
-
 
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp)
 
@@ -41,11 +40,12 @@ add_executable(web3-cpp
 )
 
 target_include_directories(web3-cpp PRIVATE
-    include
+    include/web3
     submodule/json-rpc/include
-    submodule/httplib/
+
 )
 
 target_link_libraries(web3-cpp PRIVATE
     nlohmann_json::nlohmann_json
+    CURL::libcurl
 )

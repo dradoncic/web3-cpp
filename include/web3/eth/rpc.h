@@ -1,0 +1,38 @@
+#pragma once
+
+#include <nlohmann/json.hpp>
+#include <string>
+
+#include "rpc/client.h"
+#include "types/request.h"
+#include "types/response.h"
+
+namespace web3::eth
+{
+
+class RPC
+{
+   public:
+    explicit RPC(web3::rpc::HTTPClient connector) : connector_{connector}
+    {
+    }
+
+    web3::type::response::Block getBlock(const std::string& blockNumber);
+    web3::type::response::Transaction getTransaction(const std::string& hash);
+
+    web3::type::response::Account getAccount(
+        const web3::type::request::Standard& s);
+    std::string getBalance(const web3::type::request::Standard& s);
+    std::string getTransactionCount(const web3::type::request::Standard& s);
+
+    std::string estimateGas(const web3::type::request::Transaction& t);
+    std::string gasPrice();
+
+    std::string sendTransaction(const std::string& t);
+    std::string call(const web3::type::request::Transaction& t);
+
+   private:
+    web3::rpc::HTTPClient connector_;
+};
+
+}  // namespace web3::eth
