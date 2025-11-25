@@ -5,6 +5,7 @@
 #include <string>
 
 #include "eth/rpc.h"
+#include "types/request.h"
 
 namespace web3::anvil
 {
@@ -12,11 +13,11 @@ namespace web3::anvil
 class RPC : public web3::eth::RPC
 {
    public:
-    RPC(web3::rpc::HTTPClient& connector) : web3::eth::RPC(connector)
+    explicit RPC(web3::rpc::HTTPClient& connector) : web3::eth::RPC(connector)
     {
     }
 
-    void setBalance(const std::string& address, const std::string& amount);
+    void setBalance(const web3::type::request::SetBalance balance);
     void dropTransaction(const std::string& hash);
 };
 

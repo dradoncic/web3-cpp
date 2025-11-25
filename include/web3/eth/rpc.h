@@ -25,9 +25,9 @@ class RPC
     web3::type::response::Transaction getTransaction(const std::string& hash);
 
     web3::type::response::Account getAccount(
-        const web3::type::request::Standard& s);
-    std::string getBalance(const web3::type::request::Standard& s);
-    std::string getTransactionCount(const web3::type::request::Standard& s);
+        const web3::type::request::GetInfo& s);
+    std::string getBalance(const web3::type::request::GetInfo& s);
+    std::string getTransactionCount(const web3::type::request::GetInfo& s);
 
     std::string estimateGas(const web3::type::request::Transaction& t);
     std::string gasPrice();

@@ -11,7 +11,7 @@ namespace web3::eth
 class Eth
 {
 public:
-    Eth(RPC& rpc);
+    explicit Eth(RPC& rpc);
 
     RPC& rpc();
 

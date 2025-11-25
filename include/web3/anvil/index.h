@@ -10,7 +10,7 @@ namespace web3::anvil
 class Anvil
 {
    public:
-    Anvil(RPC& rpc);
+    explicit Anvil(RPC& rpc);
 
     RPC& rpc();
 
