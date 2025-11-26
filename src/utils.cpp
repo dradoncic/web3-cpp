@@ -135,4 +135,18 @@ std::string bytesToHex(const std::vector<uint8_t> bytes)
     return hex;
 }
 
+std::string ensureHexPrefix(const std::string &hex)
+{
+    if (hex.size() >= 2 && hex[0] == '0' && (hex[1] == 'x' || hex[1] == 'X'))
+        return hex;
+    return "0x" + hex;
+}
+
+std::string removeHexPrefix(const std::string &hex)
+{
+    if (hex.size() >= 2 && hex[0] == '0' && (hex[1] == 'x' || hex[1] == 'X'))
+        return hex.substr(2);
+    return hex;
+}
+
 }  // namespace web3::utils

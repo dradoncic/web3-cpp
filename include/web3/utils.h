@@ -32,7 +32,7 @@ std::string fromWei(const std::string& wei, const std::string& unit = "ether");
 bool isHex(const std::string& hex);
 std::vector<uint8_t> hexToBytes(const std::string& hex);
 std::string bytesToHex(const std::vector<uint8_t>& bytes);
-std::string ensureHexPrefix(const std::string& hex);
+std::string ensureHexPrefix(std::string& hex);
 std::string removeHexPrefix(const std::string& hex);
 std::string hexToDec(std::string hex);
 std::string decToHex(std::string dec);
