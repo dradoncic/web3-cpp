@@ -28,8 +28,11 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
     endif()
 endif()
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 find_package(nlohmann_json REQUIRED)
 find_package(CURL REQUIRED)
+find_package(GMP REQUIRED)
 
 add_subdirectory(submodule/json-rpc)
 
@@ -48,4 +51,5 @@ target_include_directories(web3-cpp PRIVATE
 target_link_libraries(web3-cpp PRIVATE
     nlohmann_json::nlohmann_json
     CURL::libcurl
+    GMP::GMP
 )

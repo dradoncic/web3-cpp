@@ -16,8 +16,7 @@ web3::eth::Eth& web3::Web3::eth()
 {
     if (type_ != web3::RPCType::Ethereum)
         throw std::runtime_error(
-            "Web3 was initialized with RPCType::Anvil. Cannot access eth() "
-            "API.");
+            "Web3 was initialized with RPCType::Anvil. Cannot access eth() API.");
     return eth_;
 }
 
@@ -25,7 +24,6 @@ web3::anvil::Anvil& web3::Web3::anvil()
 {
     if (type_ != web3::RPCType::Anvil)
         throw std::runtime_error(
-            "Web3 was initialized with RPCType::Ethereum. Cannot access anvil() "
-            "API.");
+            "Web3 was initialized with RPCType::Ethereum. Cannot access anvil() API.");
     return anvil_;
 }

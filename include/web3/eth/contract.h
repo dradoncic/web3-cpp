@@ -15,7 +15,7 @@ class ContractMethod
     ContractMethod(const std::string& name, const nlohmann::json& abi,
                    web3::eth::RPC& rpc);
 
-    ContractMethod& parama(const std::string& value);
+    ContractMethod& param(const std::string& value);
     ContractMethod& params(const std::vector<std::string>& values);
 
     std::string call(const std::string& to, const std::string& from = "");

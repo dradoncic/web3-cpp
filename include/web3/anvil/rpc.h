@@ -13,9 +13,7 @@ namespace web3::anvil
 class RPC : public web3::eth::RPC
 {
    public:
-    explicit RPC(web3::rpc::HTTPClient& connector) : web3::eth::RPC(connector)
-    {
-    }
+    using web3::eth::RPC::RPC;
 
     void setBalance(const web3::type::request::SetBalance balance);
     void dropTransaction(const std::string& hash);
