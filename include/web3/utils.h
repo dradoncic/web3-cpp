@@ -20,10 +20,10 @@ inline std::map<std::string, Unit> unitMap = {
 class BN
 {
    public:
-    static std::string add(const std::string& a, const std::string& b);
-    static std::string sub(const std::string& a, const std::string& b);
-    static std::string mul(const std::string& a, const std::string& b);
-    static std::string div(const std::string& a, const std::string& b);
+    static std::string add(const std::string& a, const std::string& b, int base = 10);
+    static std::string sub(const std::string& a, const std::string& b, int base = 10);
+    static std::string mul(const std::string& a, const std::string& b, int base = 10);
+    static std::string div(const std::string& a, const std::string& b, int base = 10);
 };
 
 std::string toWei(const std::string& amount, const std::string& unit = "ether");
@@ -32,10 +32,10 @@ std::string fromWei(const std::string& wei, const std::string& unit = "ether");
 bool isHex(const std::string& hex);
 std::vector<uint8_t> hexToBytes(const std::string& hex);
 std::string bytesToHex(const std::vector<uint8_t>& bytes);
-std::string ensureHexPrefix(std::string& hex);
+std::string ensureHexPrefix(const std::string& hex);
 std::string removeHexPrefix(const std::string& hex);
-std::string hexToDec(std::string hex);
-std::string decToHex(std::string dec);
+std::string hexToDec(const std::string& hex);
+std::string decToHex(const std::string& dec);
 
 std::string padLeft(const std::string& hex, size_t length);
 std::string stripLeadingZeros(const std::string& hex);
