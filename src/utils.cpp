@@ -2,7 +2,6 @@
 
 #include <gmpxx.h>
 
-#include <array>
 #include <cctype>
 #include <stdexcept>
 
@@ -83,10 +82,13 @@ std::string fromWei(const std::string& amount, const std::string& unit)
 
 bool isHex(const std::string& hex)
 {
-    if (hex.size() < 3) return false;
-    if (hex[0] != '0' || (hex[1] != 'x' && hex[1] != 'X')) return false;
+    if (hex.size() < 3)
+        return false;
+    if (hex[0] != '0' || (hex[1] != 'x' && hex[1] != 'X'))
+        return false;
 
-    return std::all_of(hex.begin() + 2, hex.end(), [](unsigned char c){ return std::isxdigit(c); });
+    return std::all_of(hex.begin() + 2, hex.end(),
+                       [](unsigned char c) { return std::isxdigit(c); });
 }
 
 std::string ensureHexPrefix(const std::string& hex)
@@ -106,10 +108,12 @@ std::string removeHexPrefix(const std::string& hex)
 std::vector<uint8_t> hexToBytes(const std::string& hex)
 {
     std::vector<uint8_t> bytes;
-    if (!isHex(hex)) return bytes;
+    if (!isHex(hex))
+        return bytes;
 
     std::string hex_n = removeHexPrefix(hex);
-    if (hex_n.size() % 2 != 0) hex_n = "0" + hex_n;
+    if (hex_n.size() % 2 != 0)
+        hex_n = "0" + hex_n;
 
     for (size_t i = 0; i < hex_n.size(); i += 2)
     {
@@ -138,7 +142,8 @@ std::string bytesToHex(const std::vector<uint8_t> bytes)
 
 std::string hexToDec(const std::string& hex)
 {
-    if (!isHex(hex)) return "0";
+    if (!isHex(hex))
+        return "0";
     mpz_class dec(removeHexPrefix(hex), 16);
     return dec.get_str();
 }
@@ -152,7 +157,8 @@ std::string decToHex(const std::string& dec)
 std::string padLeft(const std::string& hex, size_t length)
 {
     auto hex_n = removeHexPrefix(hex);
-    if (hex_n.size() < length) hex_n.insert(0, length - hex.size(), '0');
+    if (hex_n.size() < length)
+        hex_n.insert(0, length - hex.size(), '0');
     return "0x" + hex_n;
 }
 
@@ -160,8 +166,18 @@ std::string stripLeadingZeros(const std::string& hex)
 {
     auto hex_n = removeHexPrefix(hex);
     auto pos = hex_n.find_first_not_of('0');
-    if (pos == std::string::npos) return "0x0";
+    if (pos == std::string::npos)
+        return "0x0";
     return "0x" + hex_n.substr(pos);
+}
+
+std::vector<uint8_t> concat(const std::vector<uint8_t>& a,
+                            const std::vector<uint8_t>& b)
+{
+    std::vector<uint8_t> newVec;
+    newVec.insert(newVec.end(), a.begin(), a.end());
+    newVec.insert(newVec.end(), b.begin(), b.end());
+    return newVec;
 }
 
 }  // namespace web3::utils
