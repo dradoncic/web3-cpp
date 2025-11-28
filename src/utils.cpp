@@ -1,8 +1,7 @@
 #include "utils.h"
 
-#include <gmpxx.h>
-
 #include <cctype>
+#include <gmpxx.h>
 #include <stdexcept>
 
 namespace web3::utils
@@ -45,10 +44,8 @@ std::string toWei(const std::string& amount, const std::string& unit)
 
     auto dotPos = amount.find('.');
 
-    std::string intPart =
-        (dotPos == std::string::npos) ? amount : amount.substr(0, dotPos);
-    std::string fracPart =
-        (dotPos == std::string::npos) ? "0" : amount.substr(dotPos + 1);
+    std::string intPart = (dotPos == std::string::npos) ? amount : amount.substr(0, dotPos);
+    std::string fracPart = (dotPos == std::string::npos) ? "0" : amount.substr(dotPos + 1);
 
     if (fracPart.size() > static_cast<size_t>(exp))
         fracPart = fracPart.substr(0, exp);
@@ -69,8 +66,7 @@ std::string fromWei(const std::string& amount, const std::string& unit)
     if (amount.size() <= static_cast<size_t>(exp))
         result = "0." + std::string(exp - amount.size(), '0') + amount;
     else
-        result = amount.substr(0, amount.size() - exp) + "." +
-                 amount.substr(amount.size() - exp);
+        result = amount.substr(0, amount.size() - exp) + "." + amount.substr(amount.size() - exp);
 
     while (result.back() == '0')
         result.pop_back();
@@ -117,8 +113,7 @@ std::vector<uint8_t> hexToBytes(const std::string& hex)
 
     for (size_t i = 0; i < hex_n.size(); i += 2)
     {
-        uint8_t byte =
-            static_cast<uint8_t>(std::stoi(hex_n.substr(i, 2), nullptr, 16));
+        uint8_t byte = static_cast<uint8_t>(std::stoi(hex_n.substr(i, 2), nullptr, 16));
         bytes.push_back(byte);
     }
 
@@ -171,8 +166,7 @@ std::string stripLeadingZeros(const std::string& hex)
     return "0x" + hex_n.substr(pos);
 }
 
-std::vector<uint8_t> concat(const std::vector<uint8_t>& a,
-                            const std::vector<uint8_t>& b)
+std::vector<uint8_t> concat(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b)
 {
     std::vector<uint8_t> newVec;
     newVec.insert(newVec.end(), a.begin(), a.end());
@@ -180,4 +174,4 @@ std::vector<uint8_t> concat(const std::vector<uint8_t>& a,
     return newVec;
 }
 
-}  // namespace web3::utils
+} // namespace web3::utils

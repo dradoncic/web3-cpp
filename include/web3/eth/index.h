@@ -4,7 +4,6 @@
 #include "eth/contract.h"
 #include "eth/rpc.h"
 
-
 namespace web3::eth
 {
 
@@ -24,4 +23,4 @@ private:
     Accounts accounts_;
 };
 
-}
+} // namespace web3::eth

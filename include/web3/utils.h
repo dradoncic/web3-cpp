@@ -19,7 +19,7 @@ inline std::map<std::string, Unit> unitMap = {
 
 class BN
 {
-   public:
+public:
     static std::string add(const std::string& a, const std::string& b, int base = 10);
     static std::string sub(const std::string& a, const std::string& b, int base = 10);
     static std::string mul(const std::string& a, const std::string& b, int base = 10);
@@ -39,10 +39,8 @@ std::string decToHex(const std::string& dec);
 
 std::string padLeft(const std::string& hex, size_t length);
 std::string stripLeadingZeros(const std::string& hex);
-std::vector<uint8_t> concat(const std::vector<uint8_t>& a,
-                            const std::vector<uint8_t>& b);
+std::vector<uint8_t> concat(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b);
 
-std::string sha3(const std::string& data);
 std::string keccak256(const std::string& data);
 
 std::string sign(const std::string& msg, const std::string& privateKey);
@@ -62,4 +60,4 @@ std::string abiEncodeBytes(std::vector<uint8_t> bytes);
 
 std::string privateKeyToPublicKey(const std::string& privateKey);
 std::string publicKeyToAddress(const std::string& publicKey);
-}  // namespace web3::utils
+} // namespace web3::utils

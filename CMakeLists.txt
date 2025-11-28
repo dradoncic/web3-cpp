@@ -33,16 +33,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(nlohmann_json REQUIRED)
 find_package(CURL REQUIRED)
 find_package(GMP REQUIRED)
+find_library(CRYPTOPP_LIB cryptopp)
 
 add_subdirectory(submodule/json-rpc)
 
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp)
 
-add_executable(web3-cpp
+add_library(web3-cpp SHARED
     ${SRC_FILES}
 )
 
-target_include_directories(web3-cpp PRIVATE
+target_include_directories(web3-cpp PUBLIC
     include/web3
     submodule/json-rpc/include
 
@@ -50,6 +51,7 @@ target_include_directories(web3-cpp PRIVATE
 
 target_link_libraries(web3-cpp PRIVATE
     nlohmann_json::nlohmann_json
+    ${CRYPTOPP_LIB}
     CURL::libcurl
     GMP::GMP
 )

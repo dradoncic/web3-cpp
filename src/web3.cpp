@@ -3,12 +3,12 @@
 #include <stdexcept>
 
 web3::Web3::Web3(const std::string& host, int port, web3::RPCType type)
-    : type_{type},
-      connector_{host, port},
-      eth_rpc_{connector_},
-      anvil_rpc_{connector_},
-      eth_{eth_rpc_},
-      anvil_{anvil_rpc_}
+    : type_ {type},
+      connector_ {host, port},
+      eth_rpc_ {connector_},
+      anvil_rpc_ {connector_},
+      eth_ {eth_rpc_},
+      anvil_ {anvil_rpc_}
 {
 }
 

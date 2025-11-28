@@ -31,25 +31,24 @@ struct Transaction
 
 inline void to_json(nlohmann::json& json, const Transaction& transaction)
 {
-    json = nlohmann::json{
-        {"blockHash", transaction.blockHash},
-        {"blockNumber", transaction.blockNumber},
-        {"chainId", transaction.chainId},
-        {"from", transaction.from},
-        {"gas", transaction.gas},
-        {"gasPrice", transaction.gasPrice},
-        {"maxFeePerGas", transaction.maxFeePerGas},
-        {"maxPriorityFeePerGas", transaction.maxPriorityFeePerGas},
-        {"hash", transaction.hash},
-        {"input", transaction.input},
-        {"nonce", transaction.nonce},
-        {"to", transaction.to},
-        {"transactionIndex", transaction.transactionIndex},
-        {"value", transaction.value},
-        {"type", transaction.type},
-        {"v", transaction.v},
-        {"r", transaction.r},
-        {"s", transaction.s}};
+    json = nlohmann::json {{"blockHash", transaction.blockHash},
+                           {"blockNumber", transaction.blockNumber},
+                           {"chainId", transaction.chainId},
+                           {"from", transaction.from},
+                           {"gas", transaction.gas},
+                           {"gasPrice", transaction.gasPrice},
+                           {"maxFeePerGas", transaction.maxFeePerGas},
+                           {"maxPriorityFeePerGas", transaction.maxPriorityFeePerGas},
+                           {"hash", transaction.hash},
+                           {"input", transaction.input},
+                           {"nonce", transaction.nonce},
+                           {"to", transaction.to},
+                           {"transactionIndex", transaction.transactionIndex},
+                           {"value", transaction.value},
+                           {"type", transaction.type},
+                           {"v", transaction.v},
+                           {"r", transaction.r},
+                           {"s", transaction.s}};
 }
 
 inline void from_json(const nlohmann::json& json, Transaction& transaction)
@@ -84,10 +83,10 @@ struct Withdrawal
 
 inline void to_json(nlohmann::json& j, const Withdrawal& w)
 {
-    j = nlohmann::json{{"index", w.index},
-                       {"validatorIndex", w.validatorIndex},
-                       {"address", w.address},
-                       {"amount", w.amount}};
+    j = nlohmann::json {{"index", w.index},
+                        {"validatorIndex", w.validatorIndex},
+                        {"address", w.address},
+                        {"amount", w.amount}};
 }
 
 inline void from_json(const nlohmann::json& j, Withdrawal& w)
@@ -126,28 +125,28 @@ struct Block
 
 inline void to_json(nlohmann::json& j, const Block& b)
 {
-    j = nlohmann::json{{"number", b.number},
-                       {"hash", b.hash},
-                       {"parentHash", b.parentHash},
-                       {"nonce", b.nonce},
-                       {"sha3Uncles", b.sha3Uncles},
-                       {"logsBloom", b.logsBloom},
-                       {"transactionsRoot", b.transactionsRoot},
-                       {"stateRoot", b.stateRoot},
-                       {"receiptsRoot", b.receiptsRoot},
-                       {"miner", b.miner},
-                       {"mixHash", b.mixHash},
-                       {"difficulty", b.difficulty},
-                       {"extraData", b.extraData},
-                       {"size", b.size},
-                       {"gasLimit", b.gasLimit},
-                       {"gasUsed", b.gasUsed},
-                       {"timestamp", b.timestamp},
-                       {"transactions", b.transactions},
-                       {"uncles", b.uncles},
-                       {"baseFeePerGas", b.baseFeePerGas},
-                       {"withdrawals", b.withdrawals},
-                       {"withdrawalsRoot", b.withdrawalsRoot}};
+    j = nlohmann::json {{"number", b.number},
+                        {"hash", b.hash},
+                        {"parentHash", b.parentHash},
+                        {"nonce", b.nonce},
+                        {"sha3Uncles", b.sha3Uncles},
+                        {"logsBloom", b.logsBloom},
+                        {"transactionsRoot", b.transactionsRoot},
+                        {"stateRoot", b.stateRoot},
+                        {"receiptsRoot", b.receiptsRoot},
+                        {"miner", b.miner},
+                        {"mixHash", b.mixHash},
+                        {"difficulty", b.difficulty},
+                        {"extraData", b.extraData},
+                        {"size", b.size},
+                        {"gasLimit", b.gasLimit},
+                        {"gasUsed", b.gasUsed},
+                        {"timestamp", b.timestamp},
+                        {"transactions", b.transactions},
+                        {"uncles", b.uncles},
+                        {"baseFeePerGas", b.baseFeePerGas},
+                        {"withdrawals", b.withdrawals},
+                        {"withdrawalsRoot", b.withdrawalsRoot}};
 }
 
 inline void from_json(const nlohmann::json& j, Block& b)
@@ -194,16 +193,16 @@ struct Log
 
 inline void to_json(nlohmann::json& json, const Log& log)
 {
-    json = nlohmann::json{{"logIndex", log.logIndex},
-                          {"removed", log.removed},
-                          {"blockNumber", log.blockNumber},
-                          {"blockTimestamp", log.blockTimestamp},
-                          {"blockHash", log.blockHash},
-                          {"transactionHash", log.transactionHash},
-                          {"transactionIndex", log.transactionIndex},
-                          {"address", log.address},
-                          {"data", log.data},
-                          {"topics", log.topics}};
+    json = nlohmann::json {{"logIndex", log.logIndex},
+                           {"removed", log.removed},
+                           {"blockNumber", log.blockNumber},
+                           {"blockTimestamp", log.blockTimestamp},
+                           {"blockHash", log.blockHash},
+                           {"transactionHash", log.transactionHash},
+                           {"transactionIndex", log.transactionIndex},
+                           {"address", log.address},
+                           {"data", log.data},
+                           {"topics", log.topics}};
 }
 
 inline void from_json(const nlohmann::json& json, Log& log)
@@ -242,20 +241,20 @@ struct Receipt
 
 inline void to_json(nlohmann::json& j, const Receipt& r)
 {
-    j = nlohmann::json{{"blockHash", r.blockHash},
-                       {"blockNumber", r.blockNumber},
-                       {"contractAddress", r.contractAddress},
-                       {"cumulativeGasUsed", r.cumulativeGasUsed},
-                       {"effectiveGasPrice", r.effectiveGasPrice},
-                       {"from", r.from},
-                       {"gasUsed", r.gasUsed},
-                       {"logs", r.logs},
-                       {"logsBloom", r.logsBloom},
-                       {"status", r.status},
-                       {"to", r.to},
-                       {"transactionHash", r.transactionHash},
-                       {"transactionIndex", r.transactionIndex},
-                       {"type", r.type}};
+    j = nlohmann::json {{"blockHash", r.blockHash},
+                        {"blockNumber", r.blockNumber},
+                        {"contractAddress", r.contractAddress},
+                        {"cumulativeGasUsed", r.cumulativeGasUsed},
+                        {"effectiveGasPrice", r.effectiveGasPrice},
+                        {"from", r.from},
+                        {"gasUsed", r.gasUsed},
+                        {"logs", r.logs},
+                        {"logsBloom", r.logsBloom},
+                        {"status", r.status},
+                        {"to", r.to},
+                        {"transactionHash", r.transactionHash},
+                        {"transactionIndex", r.transactionIndex},
+                        {"type", r.type}};
 }
 
 inline void from_json(const nlohmann::json& j, Receipt& r)
@@ -310,10 +309,10 @@ struct Account
 
 inline void to_json(nlohmann::json& j, const Account& a)
 {
-    j = nlohmann::json{{"codeHash", a.codeHash},
-                       {"storageRoot", a.storageRoot},
-                       {"balance", a.balance},
-                       {"nonce", a.nonce}};
+    j = nlohmann::json {{"codeHash", a.codeHash},
+                        {"storageRoot", a.storageRoot},
+                        {"balance", a.balance},
+                        {"nonce", a.nonce}};
 }
 
 inline void from_json(const nlohmann::json& j, Account& a)
@@ -324,4 +323,4 @@ inline void from_json(const nlohmann::json& j, Account& a)
     j.at("nonce").get_to(a.nonce);
 }
 
-}  // namespace web3::type::response
+} // namespace web3::type::response

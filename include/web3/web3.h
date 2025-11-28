@@ -1,7 +1,7 @@
 #pragma once
 
-#include "eth/index.h"
 #include "anvil/index.h"
+#include "eth/index.h"
 
 namespace web3
 {
@@ -34,5 +34,4 @@ private:
     anvil::Anvil anvil_;
 };
 
-
-}
+} // namespace web3

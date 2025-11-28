@@ -12,11 +12,11 @@ namespace web3::anvil
 
 class RPC : public web3::eth::RPC
 {
-   public:
+public:
     using web3::eth::RPC::RPC;
 
     void setBalance(const web3::type::request::SetBalance balance);
     void dropTransaction(const std::string& hash);
 };
 
-}  // namespace web3::anvil
+} // namespace web3::anvil
