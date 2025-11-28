@@ -41,7 +41,7 @@ std::string padLeft(const std::string& hex, size_t length);
 std::string stripLeadingZeros(const std::string& hex);
 std::vector<uint8_t> concat(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b);
 
-std::string keccak256(const std::string& data);
+std::string keccak256(const std::vector<uint8_t>& data);
 
 std::string sign(const std::string& msg, const std::string& privateKey);
 int recoverV(std::string hash, std::string signature);

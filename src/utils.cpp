@@ -1,6 +1,13 @@
 #include "utils.h"
 
 #include <cctype>
+#include <cryptopp/eccrypto.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/integer.h>
+#include <cryptopp/keccak.h>
+#include <cryptopp/oids.h>
+#include <cryptopp/osrng.h>
 #include <gmpxx.h>
 #include <stdexcept>
 
@@ -78,12 +85,11 @@ std::string fromWei(const std::string& amount, const std::string& unit)
 
 bool isHex(const std::string& hex)
 {
-    if (hex.size() < 3)
-        return false;
-    if (hex[0] != '0' || (hex[1] != 'x' && hex[1] != 'X'))
+    std::string hex_n = removeHexPrefix(hex);
+    if (hex_n.empty())
         return false;
 
-    return std::all_of(hex.begin() + 2, hex.end(),
+    return std::all_of(hex_n.begin(), hex_n.end(),
                        [](unsigned char c) { return std::isxdigit(c); });
 }
 
@@ -103,34 +109,25 @@ std::string removeHexPrefix(const std::string& hex)
 
 std::vector<uint8_t> hexToBytes(const std::string& hex)
 {
-    std::vector<uint8_t> bytes;
-    if (!isHex(hex))
-        return bytes;
-
     std::string hex_n = removeHexPrefix(hex);
-    if (hex_n.size() % 2 != 0)
+    if (hex_n.size() & 1)
         hex_n = "0" + hex_n;
 
-    for (size_t i = 0; i < hex_n.size(); i += 2)
-    {
-        uint8_t byte = static_cast<uint8_t>(std::stoi(hex_n.substr(i, 2), nullptr, 16));
-        bytes.push_back(byte);
-    }
+    std::vector<uint8_t> bytes(hex_n.size() / 2);
+
+    CryptoPP::StringSource ss(
+        hex_n, true, new CryptoPP::HexDecoder(new CryptoPP::ArraySink(bytes.data(), bytes.size())));
 
     return bytes;
 }
 
-std::string bytesToHex(const std::vector<uint8_t> bytes)
+std::string bytesToHex(const std::vector<uint8_t>& bytes)
 {
-    static const char* hex_chars = "0123456789ABCDEF";
     std::string hex;
-    hex.reserve(bytes.size() * 2);
+    CryptoPP::HexEncoder encoder(new CryptoPP::StringSink(hex), false);
 
-    for (auto byte : bytes)
-    {
-        hex += hex_chars[(byte >> 4) & 0x0F];
-        hex += hex_chars[(byte & 0x0F)];
-    }
+    encoder.Put(bytes.data(), bytes.size());
+    encoder.MessageEnd();
 
     return "0x" + hex;
 }
@@ -172,6 +169,56 @@ std::vector<uint8_t> concat(const std::vector<uint8_t>& a, const std::vector<uin
     newVec.insert(newVec.end(), a.begin(), a.end());
     newVec.insert(newVec.end(), b.begin(), b.end());
     return newVec;
+}
+
+std::string keccak256(const std::vector<uint8_t>& data)
+{
+    CryptoPP::Keccak_256 hash;
+
+    std::vector<uint8_t> digest(32);
+    hash.Update(data.data(), data.size());
+    hash.TruncatedFinal(digest.data(), digest.size());
+
+    return bytesToHex(digest);
+}
+
+std::string privateKeyToPublicKey(const std::string& privateKey)
+{
+    auto privBytes = hexToBytes(privateKey);
+    if (privBytes.size() != 32)
+        throw std::runtime_error("Invalid private key length!");
+
+    CryptoPP::Integer privBigInt(privBytes.data(), privBytes.size());
+
+    CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PrivateKey priv;
+    priv.Initialize(CryptoPP::ASN1::secp256k1(), privBigInt);
+
+    CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PublicKey pub;
+    priv.MakePublicKey(pub);
+
+    const CryptoPP::ECP::Point& Q = pub.GetPublicElement();
+    std::vector<uint8_t> pubBytes;
+    pubBytes.resize(64);
+    Q.x.Encode(pubBytes.data(), 32);
+    Q.y.Encode(pubBytes.data() + 32, 32);
+
+    return bytesToHex(pubBytes);
+}
+
+std::string publicKeyToAddress(const std::string& publicKey)
+{
+    auto pubBytes = hexToBytes(publicKey);
+    if (pubBytes.size() != 64)
+        throw std::runtime_error("Invalid public key length.");
+
+    CryptoPP::Keccak_256 hash;
+
+    std::vector<uint8_t> digest(32);
+    hash.Update(pubBytes.data(), pubBytes.size());
+    hash.TruncatedFinal(digest.data(), digest.size());
+
+    std::vector<uint8_t> addr(digest.end() - 20, digest.end());
+    return bytesToHex(addr);
 }
 
 } // namespace web3::utils
