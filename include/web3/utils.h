@@ -62,4 +62,5 @@ std::string encodeBytes(std::vector<uint8_t> bytes);
 
 std::string privateKeyToPublicKey(const std::string& privateKey);
 std::string publicKeyToAddress(const std::string& publicKey);
+std::string privateKeyToAddres(const std::string& privateKey);
 } // namespace web3::utils

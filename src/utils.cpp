@@ -176,6 +176,23 @@ std::vector<uint8_t> concat(const std::vector<uint8_t>& a, const std::vector<uin
     return newVec;
 }
 
+/**
+ * @brief Computes the Keccak-256 hash of the given data.
+ *
+ * This function takes a vector of bytes as input and returns
+ * the Keccak-256 hash of the data as a hexadecimal string
+ * prefixed with "0x".
+ *
+ * @param data A vector of bytes to hash.
+ * @return std::string The Keccak-256 hash as a "0x"-prefixed hexadecimal string.
+ *
+ * @note Uses Crypto++ library's Keccak_256 implementation.
+ *
+ * @example
+ * std::vector<uint8_t> myData = {0x01, 0x02, 0x03};
+ * std::string hash = keccak256(myData);
+ * // hash = "0x..." (64 hex characters)
+ */
 std::string keccak256(const std::vector<uint8_t>& data)
 {
     CryptoPP::Keccak_256 hash;
@@ -223,7 +240,9 @@ std::string publicKeyToAddress(const std::string& publicKey)
     hash.TruncatedFinal(digest.data(), digest.size());
 
     std::vector<uint8_t> addr(digest.end() - 20, digest.end());
-    return bytesToHex(addr);
+    auto raw_addr = bytesToHex(addr);
+
+    return toChecksumAddress(raw_addr);
 }
 
 std::vector<uint8_t> intToBytes(uint64_t value)
@@ -291,6 +310,38 @@ std::vector<uint8_t> rlpEncodeList(const std::vector<std::vector<uint8_t>>& inpu
     }
 
     return res;
+}
+
+bool isAddress(const std::string& address)
+{
+    auto addr = removeHexPrefix(address);
+
+    if (addr.size() != 40)
+        return false;
+
+    return isHex(addr);
+}
+
+std::string toChecksumAddress(const std::string& address)
+{
+    auto addr = removeHexPrefix(address);
+    std::transform(addr.begin(), addr.end(), addr.begin(), ::tolower);
+
+    auto addrBytes = hexToBytes(addr);
+    auto hashHex = removeHexPrefix(keccak256(addrBytes));
+
+    for (auto i = 0; i < addr.size(); i++)
+    {
+        char c = addr[i];
+        char h = hashHex[i];
+
+        uint8_t hval = (h >= '0' && h <= '9') ? h - '0' : (tolower(h) - 'a' + 10);
+
+        if (hval >= 8)
+            addr[i] = toupper(c);
+    }
+
+    return ensureHexPrefix(addr);
 }
 
 } // namespace web3::utils
