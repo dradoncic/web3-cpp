@@ -184,7 +184,8 @@ std::vector<uint8_t> concat(const std::vector<uint8_t>& a, const std::vector<uin
  * prefixed with "0x".
  *
  * @param data A vector of bytes to hash.
- * @return std::string The Keccak-256 hash as a "0x"-prefixed hexadecimal string.
+ * @return std::string The Keccak-256 hash as a "0x"-prefixed hexadecimal
+ * string.
  *
  * @note Uses Crypto++ library's Keccak_256 implementation.
  *
