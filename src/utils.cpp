@@ -146,11 +146,16 @@ std::string decToHex(const std::string& dec)
     return "0x" + hex.get_str(16);
 }
 
+std::vector<uint8_t> decToBytes(const std::string& dec)
+{
+    std::string hex = decToHex(dec);
+    return hexToBytes(hex);
+}
+
 std::string padLeft(const std::string& hex, size_t length)
 {
     auto hex_n = removeHexPrefix(hex);
-    if (hex_n.size() < length)
-        hex_n.insert(0, length - hex.size(), '0');
+    hex_n.insert(0, length - hex.size(), '0');
     return "0x" + hex_n;
 }
 
@@ -219,6 +224,73 @@ std::string publicKeyToAddress(const std::string& publicKey)
 
     std::vector<uint8_t> addr(digest.end() - 20, digest.end());
     return bytesToHex(addr);
+}
+
+std::vector<uint8_t> intToBytes(uint64_t value)
+{
+    if (value == 0)
+        return {0x00};
+    std::vector<uint8_t> bytes;
+    while (value)
+    {
+        bytes.push_back(value & 0XFF);
+        value >>= 8;
+    }
+
+    std::reverse(bytes.begin(), bytes.end());
+    return bytes;
+}
+
+std::vector<uint8_t> rlpEncode(const std::vector<uint8_t>& input)
+{
+    auto len = input.size();
+    std::vector<uint8_t> encoded;
+
+    if (len == 0)
+        encoded.push_back(0x80);
+    else if (len == 1 && input[0] <= 0x7f)
+        encoded.push_back(input[0]);
+    else if (len <= 55)
+    {
+        encoded.push_back(0x80 + static_cast<uint8_t>(len));
+        encoded.insert(encoded.end(), input.begin(), input.end());
+    }
+    else
+    {
+        auto lenBytes = intToBytes(len);
+        encoded.push_back(0xB7 + static_cast<uint8_t>(lenBytes.size()));
+        encoded.insert(encoded.end(), lenBytes.begin(), lenBytes.end());
+        encoded.insert(encoded.end(), input.begin(), input.end());
+    }
+    return encoded;
+}
+
+std::vector<uint8_t> rlpEncodeList(const std::vector<std::vector<uint8_t>>& inputs)
+{
+    std::vector<uint8_t> encoded;
+    for (auto& it : inputs)
+    {
+        auto encodedItem = rlpEncode(it);
+        encoded.insert(encoded.end(), encodedItem.begin(), encodedItem.end());
+    }
+
+    size_t len = encoded.size();
+    std::vector<uint8_t> res;
+
+    if (len <= 55)
+    {
+        res.push_back(0xC0 + static_cast<uint8_t>(len));
+        res.insert(res.end(), encoded.begin(), encoded.end());
+    }
+    else
+    {
+        auto lenBytes = intToBytes(len);
+        res.push_back(0xF7 + static_cast<uint8_t>(lenBytes.size()));
+        res.insert(res.end(), lenBytes.begin(), lenBytes.end());
+        res.insert(res.end(), encoded.begin(), encoded.end());
+    }
+
+    return res;
 }
 
 } // namespace web3::utils

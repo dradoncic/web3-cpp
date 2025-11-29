@@ -36,6 +36,7 @@ std::string ensureHexPrefix(const std::string& hex);
 std::string removeHexPrefix(const std::string& hex);
 std::string hexToDec(const std::string& hex);
 std::string decToHex(const std::string& dec);
+std::vector<uint8_t> decToBytes(const std::string& dec);
 
 std::string padLeft(const std::string& hex, size_t length);
 std::string stripLeadingZeros(const std::string& hex);
@@ -46,17 +47,18 @@ std::string keccak256(const std::vector<uint8_t>& data);
 std::string sign(const std::string& msg, const std::string& privateKey);
 int recoverV(std::string hash, std::string signature);
 
-std::string rlpEncodeString(const std::string&);
-std::string rlpEncodeList(const std::vector<std::string>&);
+std::vector<uint8_t> rlpEncode(const std::vector<uint8_t>& input);
+std::vector<uint8_t> rlpEncodeList(const std::vector<std::vector<uint8_t>>& inputs);
+std::vector<uint8_t> intToBytes(uint64_t value);
 
 bool isAddress(const std::string& address);
 std::string toChecksumAddress(const std::string& address);
 
 std::string encodeFunctionSelector(const std::string& signature);
-std::string abiEncodeUint(const std::string& valueHex);
-std::string abiEncodeAddress(const std::string& address);
-std::string abiEncodeBool(bool);
-std::string abiEncodeBytes(std::vector<uint8_t> bytes);
+std::string encodeUint(uint64_t value);
+std::string encodeAddress(const std::string& address);
+std::string encodeBool(bool val);
+std::string encodeBytes(std::vector<uint8_t> bytes);
 
 std::string privateKeyToPublicKey(const std::string& privateKey);
 std::string publicKeyToAddress(const std::string& publicKey);
