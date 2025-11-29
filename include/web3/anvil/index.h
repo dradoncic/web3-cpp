@@ -9,19 +9,18 @@ namespace web3::anvil
 
 class Anvil
 {
-   public:
+public:
     explicit Anvil(RPC& rpc);
 
     RPC& rpc();
 
     web3::eth::Accounts& accounts();
 
-    web3::eth::Contract contract(const std::string& address,
-                                 nlohmann::json& abi);
+    web3::eth::Contract contract(const std::string& address, nlohmann::json& abi);
 
-   private:
+private:
     RPC& rpc_;
     web3::eth::Accounts accounts_;
 };
 
-}  // namespace web3::anvil
+} // namespace web3::anvil
