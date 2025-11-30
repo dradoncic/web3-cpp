@@ -10,7 +10,7 @@ namespace web3::eth
 
 class Wallet
 {
-public:
+   public:
     void add(const web3::type::request::Account& account);
     void remove(const std::string& address);
     void clear();
@@ -18,23 +18,27 @@ public:
     web3::type::request::Account get(const std::string& address);
     const std::map<std::string, web3::type::request::Account> getAll() const;
 
-private:
+   private:
     std::map<std::string, web3::type::request::Account> accounts_;
 };
 
 class Accounts
 {
-public:
+   public:
     web3::type::request::Account create();
-    web3::type::request::Account privateKeyToAccount(const std::string& privateKey);
+    web3::type::request::Account privateKeyToAccount(
+        const std::string& privateKey);
 
     std::string signTransaction(const web3::type::request::Transaction& tx,
                                 const std::string& privateKey);
 
-    Wallet& wallet() { return wallet_; };
+    Wallet& wallet()
+    {
+        return wallet_;
+    };
 
-private:
+   private:
     Wallet wallet_;
 };
 
-} // namespace web3::eth
+}  // namespace web3::eth

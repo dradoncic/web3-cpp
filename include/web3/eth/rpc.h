@@ -13,30 +13,35 @@ namespace web3::eth
 
 class RPC
 {
-public:
+   public:
     explicit RPC(web3::rpc::HTTPClient& connector)
-        : connector_ {connector},
-          client_ {jsonrpccxx::JsonRpcClient(connector, jsonrpccxx::version::v2)}
+        : connector_{connector},
+          client_{jsonrpccxx::JsonRpcClient(connector, jsonrpccxx::version::v2)}
     {
     }
 
     std::string blockNumber();
-    web3::type::response::Block getBlock(const std::string& blockNumber);
-    web3::type::response::Transaction getTransaction(const std::string& hash);
+    std::string chainId();
+    std::string gasPrice();
 
-    web3::type::response::Account getAccount(const web3::type::request::GetInfo& s);
+    web3::type::response::Block getBlockByNumber(uint64_t number);
+    web3::type::response::Block getBlockByHash(const std::string& hash);
+
+    std::string getBlockTransactionCountByNumber(uint64_t number);
+    std::string getBlockTransactionCountByHash(const std::string& hash);
+
+    web3::type::response::Transaction getTransactionByHash(const std::string& hash);
+    web3::type::response::Receipt getTransactionReceipt(const std::string& hash);
+
     std::string getBalance(const web3::type::request::GetInfo& s);
     std::string getTransactionCount(const web3::type::request::GetInfo& s);
 
     std::string estimateGas(const web3::type::request::Transaction& t);
-    std::string gasPrice();
+    std::string sendRawTransaction(const web3::type::request::Transaction& t);
 
-    std::string sendTransaction(const std::string& t);
-    std::string call(const web3::type::request::Transaction& t);
-
-protected:
+   protected:
     jsonrpccxx::JsonRpcClient client_;
     web3::rpc::HTTPClient& connector_;
 };
 
-} // namespace web3::eth
+}  // namespace web3::eth

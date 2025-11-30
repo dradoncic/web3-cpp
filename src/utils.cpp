@@ -132,24 +132,16 @@ std::string bytesToHex(const std::vector<uint8_t>& bytes)
     return "0x" + hex;
 }
 
-std::string hexToDec(const std::string& hex)
+uint64_t hexToInt(const std::string& hex)
 {
-    if (!isHex(hex))
-        return "0";
-    mpz_class dec(removeHexPrefix(hex), 16);
-    return dec.get_str();
+    return std::stoull(hex, nullptr, 16);
 }
 
-std::string decToHex(const std::string& dec)
+std::string intToHex(uint64_t dec)
 {
-    mpz_class hex(dec);
-    return "0x" + hex.get_str(16);
-}
-
-std::vector<uint8_t> decToBytes(const std::string& dec)
-{
-    std::string hex = decToHex(dec);
-    return hexToBytes(hex);
+    char buf[17];
+    snprintf(buf, sizeof(buf), "%llx", (unsigned long long)dec);
+    return ensureHexPrefix(buf);
 }
 
 std::string padLeft(const std::string& hex, size_t length)
@@ -248,16 +240,21 @@ std::string publicKeyToAddress(const std::string& publicKey)
 
 std::vector<uint8_t> intToBytes(uint64_t value)
 {
-    if (value == 0)
-        return {0x00};
     std::vector<uint8_t> bytes;
-    while (value)
+
+    bool leading = true;
+    for (int i = 7; i >= 0; --i)
     {
-        bytes.push_back(value & 0XFF);
-        value >>= 8;
+        uint8_t b = (value >> (i * 8)) & 0xFF;
+        if (b == 0 && leading)
+            continue;
+        leading = false;
+        bytes.push_back(b);
     }
 
-    std::reverse(bytes.begin(), bytes.end());
+    if (bytes.empty())
+        bytes.push_back(0);
+
     return bytes;
 }
 

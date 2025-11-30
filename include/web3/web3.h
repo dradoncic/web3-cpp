@@ -14,16 +14,19 @@ enum class RPCType
 
 class Web3
 {
-public:
+   public:
     explicit Web3(const std::string& host, int port, RPCType type);
 
     eth::Eth& eth();
 
     anvil::Anvil& anvil();
 
-    RPCType type() const { return type_; }
+    RPCType type() const
+    {
+        return type_;
+    }
 
-private:
+   private:
     RPCType type_;
     web3::rpc::HTTPClient connector_;
 
@@ -34,4 +37,4 @@ private:
     anvil::Anvil anvil_;
 };
 
-} // namespace web3
+}  // namespace web3

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils.h>
+
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -9,44 +11,68 @@ namespace web3::type::request
 // empty fields are by default 0x80
 struct Transaction
 {
-    std::string from;
+    std::string nonce;
     std::string to;
-    uint64_t gasLimit;
-    uint64_t maxPriorityFeePerGas;
-    uint64_t maxFeePerGas;
-    uint64_t value;
-    std::string data;
-    uint64_t nonce;
+    std::string from;
+    std::string gas;
+    std::string gasPrice;
+    std::string value;
+    std::string input;
+    std::string chainId;
+
+    Transaction(const std::string& from, const std::string& to, uint64_t value,
+                uint64_t nonce, uint64_t chainId, uint64_t gasPrice,
+                uint64_t gas = 21000, const std::string& input = {})
+        : from(from),
+          to(to),
+          value(web3::utils::intToHex(value)),
+          nonce(web3::utils::intToHex(nonce)),
+          chainId(web3::utils::intToHex(chainId)),
+          gasPrice(web3::utils::intToHex(gasPrice)),
+          gas(web3::utils::intToHex(gas)),
+          input(input)
+    {
+    }
+
+    Transaction(const std::string& from, const std::string& to, uint64_t value,
+                const std::string input = {})
+        : from(from),
+          to(to),
+          value(web3::utils::intToHex(value)),
+          nonce(""),
+          chainId(""),
+          gasPrice(""),
+          gas(""),
+          input(input)
+    {
+    }
 };
 
 inline void to_json(nlohmann::json& j, const Transaction& t)
 {
-    j = nlohmann::json {{"from", t.from},
-                        {"to", t.to},
-                        {"gasLimit", t.gasLimit},
-                        {"maxPriorityFeePerGas", t.maxPriorityFeePerGas},
-                        {"maxFeePerGas", t.maxFeePerGas},
-                        {"value", t.value},
-                        {"data", t.data},
-                        {"nonce", t.nonce}};
-}
+    j = nlohmann::json{};
 
-inline void from_json(const nlohmann::json& j, Transaction& t)
-{
-    j.at("from").get_to(t.from);
-    j.at("to").get_to(t.to);
-    j.at("gasLimit").get_to(t.gasLimit);
-    j.at("maxPriorityFeePerGas").get_to(t.maxPriorityFeePerGas);
-    j.at("maxFeePerGas").get_to(t.maxFeePerGas);
-    j.at("value").get_to(t.value);
-    j.at("data").get_to(t.data);
-    j.at("nonce").get_to(t.nonce);
+    auto put = [&](const char* key, const std::string& value)
+    {
+        if (!value.empty())
+            j[key] = value;
+    };
+
+    put("nonce", t.nonce);
+    put("to", t.to);
+    put("from", t.from);
+    put("gas", t.gas);
+    put("gasPrice", t.gasPrice);
+    put("value", t.value);
+    put("input", t.input);
+    put("chainId", t.chainId);
 }
 
 struct Account
 {
     std::string address;
     std::string privateKey;
+    uint64_t nonce = 0;
 };
 
 struct GetInfo
@@ -57,13 +83,7 @@ struct GetInfo
 
 inline void to_json(nlohmann::json& j, const GetInfo& b)
 {
-    j = nlohmann::json {{"address", b.address}, {"block", b.block}};
-}
-
-inline void from_json(const nlohmann::json& j, GetInfo& b)
-{
-    j.at("address").get_to(b.address);
-    j.at("block").get_to(b.block);
+    j = nlohmann::json{{"address", b.address}, {"block", b.block}};
 }
 
 struct SetBalance
@@ -74,7 +94,7 @@ struct SetBalance
 
 inline void to_json(nlohmann::json& j, const SetBalance& b)
 {
-    j = nlohmann::json {{"address", b.address}, {"balance", b.balance}};
+    j = nlohmann::json{{"address", b.address}, {"balance", b.balance}};
 }
 
 inline void from_json(const nlohmann::json& j, SetBalance& b)
@@ -83,4 +103,4 @@ inline void from_json(const nlohmann::json& j, SetBalance& b)
     j.at("balance").get_to(b.balance);
 }
 
-} // namespace web3::type::request
+}  // namespace web3::type::request

@@ -3,9 +3,7 @@
 namespace web3::eth
 {
 
-Eth::Eth(RPC& rpc)
-    : rpc_ {rpc},
-      accounts_ {}
+Eth::Eth(RPC& rpc) : rpc_{rpc}, accounts_{}
 {
 }
 
@@ -24,4 +22,4 @@ Contract Eth::contract(const std::string& address, nlohmann::json& abi)
     return Contract(address, abi, rpc_);
 }
 
-} // namespace web3::eth
+}  // namespace web3::eth

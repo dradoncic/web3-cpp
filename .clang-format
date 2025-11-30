@@ -1,84 +1,28 @@
-BasedOnStyle: LLVM
-Language: Cpp
-Standard: c++17
+# .clang-format
+
+BasedOnStyle: Google
+
+# Basic formatting
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-
-# ----- Line Wrapping -----
-ColumnLimit: 100
+ColumnLimit: 80
 BreakBeforeBraces: Allman
-AllowShortIfStatementsOnASingleLine: Never
+
+# Brace options
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+
+# Other formatting preferences
+AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: InlineOnly
-AllowShortBlocksOnASingleLine: Never
-
-# ----- Indentation -----
-ContinuationIndentWidth: 4
-ConstructorInitializerIndentWidth: 4
-AccessModifierOffset: -4
-IndentCaseLabels: true
-IndentGotoLabels: false
-IndentExternBlock: NoIndent
-
-# ----- Pointer & Reference Style -----
-PointerAlignment: Left
-ReferenceAlignment: Left
-DerivePointerAlignment: false
-
-# ----- Spaces -----
-SpaceBeforeParens: ControlStatements
-SpaceAfterCStyleCast: true
-SpaceBeforeAssignmentOperators: true
-SpacesInAngles: Never
-SpacesInContainerLiterals: false
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
-SpaceBeforeCpp11BracedList: true
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
-SpaceAroundPointerQualifiers: Default
-
-# ----- Templates -----
-AlwaysBreakTemplateDeclarations: Yes
-BreakBeforeConceptDeclarations: Always
-
-# ----- Braced Initializers -----
-Cpp11BracedListStyle: true
-PackConstructorInitializers: Never
-
-# ----- Includes -----
-SortIncludes: true
-IncludeBlocks: Regroup
-IncludeCategories:
-  - Regex: '^<.*>$'
-    Priority: 1
-  - Regex: '^".*"$'
-    Priority: 2
-
-# ----- Namespaces -----
-NamespaceIndentation: None
-
-# ----- Comments -----
-ReflowComments: true
-AlignTrailingComments: true
-SpacesBeforeTrailingComments: 1
-MaxEmptyLinesToKeep: 1
-
-# ----- Macros -----
-IndentPPDirectives: AfterHash
-
-# ----- Function Formatting -----
-BreakBeforeBinaryOperators: NonAssignment
-BreakAfterReturnType: None
-
-# ----- Switch / Case -----
-AllowShortCaseLabelsOnASingleLine: false
-
-# ----- Misc Safety -----
-RemoveSemicolon: false
-FixNamespaceComments: true
-
-# ================================
-#  END CONFIG
-# ================================
+AllowShortFunctionsOnASingleLine: None
