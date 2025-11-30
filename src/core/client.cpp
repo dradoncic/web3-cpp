@@ -1,6 +1,7 @@
 #include "core/client.h"
 
 #include <curl/curl.h>
+
 #include <stdexcept>
 #include <string>
 
@@ -10,8 +11,7 @@ namespace web3::rpc
 {
 
 HTTPClient::HTTPClient(const std::string& host, int port)
-    : host_ {host},
-      port_ {port}
+    : host_{host}, port_{port}
 {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
@@ -28,7 +28,8 @@ std::string HTTPClient::Send(const std::string& request)
         throw std::runtime_error("Failed to init CURL.");
 
     std::string response;
-    std::string url = "http://" + host_ + ":" + std::to_string(port_) + "/jsonrpc";
+    std::string url =
+        "http://" + host_ + ":" + std::to_string(port_) + "/jsonrpc";
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
@@ -53,17 +54,20 @@ std::string HTTPClient::Send(const std::string& request)
     curl_easy_cleanup(curl);
 
     if (res != CURLE_OK)
-        throw jsonrpccxx::JsonRpcException(-32003, std::string("Connection Error: ")
-                                                       + curl_easy_strerror(res));
+        throw jsonrpccxx::JsonRpcException(
+            -32003,
+            std::string("Connection Error: ") + curl_easy_strerror(res));
 
     if (code != 200)
         throw jsonrpccxx::JsonRpcException(
-            -32003, std::string("Client Connection Error - Received Non-200 Status"));
+            -32003,
+            std::string("Client Connection Error - Received Non-200 Status"));
 
     return response;
 }
 
-size_t HTTPClient::WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
+size_t HTTPClient::WriteCallback(void* contents, size_t size, size_t nmemb,
+                                 void* userp)
 {
     size_t total = size * nmemb;
     std::string* out = reinterpret_cast<std::string*>(userp);
@@ -71,4 +75,4 @@ size_t HTTPClient::WriteCallback(void* contents, size_t size, size_t nmemb, void
     return total;
 }
 
-} // namespace web3::rpc
+}  // namespace web3::rpc

@@ -9,7 +9,7 @@ namespace web3::eth
 
 class Eth
 {
-public:
+   public:
     explicit Eth(RPC& rpc);
 
     RPC& rpc();
@@ -18,9 +18,9 @@ public:
 
     Contract contract(const std::string& address, nlohmann::json& abi);
 
-private:
+   private:
     RPC& rpc_;
     Accounts accounts_;
 };
 
-} // namespace web3::eth
+}  // namespace web3::eth

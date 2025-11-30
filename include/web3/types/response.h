@@ -7,70 +7,94 @@
 namespace web3::type::response
 {
 
-struct Transaction
+struct AccessList
 {
-    std::string blockHash;
-    std::string blockNumber;
+    std::string address;
+    std::vector<std::string> storageKeys = {};
+};
+
+inline void from_json(const nlohmann::json& j, AccessList& a)
+{
+    a.address = j.value("address", "");
+    a.storageKeys = j.value("storageKeys", std::vector<std::string>{});
+}
+
+struct AuthorizationList
+{
     std::string chainId;
-    std::string from;
-    std::string gas;
-    std::string gasPrice;
-    std::string maxFeePerGas;
-    std::string maxPriorityFeePerGas;
-    std::string hash;
-    std::string input;
     std::string nonce;
-    std::string to;
-    std::string transactionIndex;
-    std::string value;
-    std::string type;
-    std::string v;
+    std::string address;
+    std::string yParity;
     std::string r;
     std::string s;
 };
 
-inline void to_json(nlohmann::json& json, const Transaction& transaction)
+inline void from_json(const nlohmann::json& j, AuthorizationList& a)
 {
-    json = nlohmann::json {{"blockHash", transaction.blockHash},
-                           {"blockNumber", transaction.blockNumber},
-                           {"chainId", transaction.chainId},
-                           {"from", transaction.from},
-                           {"gas", transaction.gas},
-                           {"gasPrice", transaction.gasPrice},
-                           {"maxFeePerGas", transaction.maxFeePerGas},
-                           {"maxPriorityFeePerGas", transaction.maxPriorityFeePerGas},
-                           {"hash", transaction.hash},
-                           {"input", transaction.input},
-                           {"nonce", transaction.nonce},
-                           {"to", transaction.to},
-                           {"transactionIndex", transaction.transactionIndex},
-                           {"value", transaction.value},
-                           {"type", transaction.type},
-                           {"v", transaction.v},
-                           {"r", transaction.r},
-                           {"s", transaction.s}};
+    a.chainId = j.value("chainId", "");
+    a.nonce = j.value("nonce", "");
+    a.address = j.value("address", "");
+    a.yParity = j.value("yParity", "");
+    a.r = j.value("r", "");
+    a.s = j.value("s", "");
 }
 
-inline void from_json(const nlohmann::json& json, Transaction& transaction)
+struct Transaction
 {
-    json.at("blockHash").get_to(transaction.blockHash);
-    json.at("blockNumber").get_to(transaction.blockNumber);
-    json.at("chainId").get_to(transaction.chainId);
-    json.at("from").get_to(transaction.from);
-    json.at("gas").get_to(transaction.gas);
-    json.at("gasPrice").get_to(transaction.gasPrice);
-    json.at("maxFeePerGas").get_to(transaction.maxFeePerGas);
-    json.at("maxPriorityFeePerGas").get_to(transaction.maxPriorityFeePerGas);
-    json.at("hash").get_to(transaction.hash);
-    json.at("input").get_to(transaction.input);
-    json.at("nonce").get_to(transaction.nonce);
-    json.at("to").get_to(transaction.to);
-    json.at("transactionIndex").get_to(transaction.transactionIndex);
-    json.at("value").get_to(transaction.value);
-    json.at("type").get_to(transaction.type);
-    json.at("v").get_to(transaction.v);
-    json.at("r").get_to(transaction.r);
-    json.at("s").get_to(transaction.s);
+    std::string blockHash = {};
+    std::string blockNumber = {};
+    std::string from = {};
+    std::string transactionIndex = {};
+    std::string type;
+    std::string nonce;
+    std::string to = {};
+    std::string gas;
+    std::string value;
+    std::string input;
+    std::string maxPriorityFeePerGas = {};
+    std::string maxFeePerGas = {};
+    std::string maxFeePerBlobGas = {};
+    std::string gasPrice;
+    std::vector<AccessList> accessList = {};
+    std::vector<std::string> blobVersionedHashes = {};
+    std::string chainId = {};
+    std::string yParity = {};
+    std::string r;
+    std::string s;
+    std::string v = {};
+};
+
+inline void from_json(const nlohmann::json& j, Transaction& t)
+{
+    t.blockHash = j.value("blockHash", "");
+    t.blockNumber = j.value("blockNumber", "");
+    t.from = j.value("from", "");
+    t.transactionIndex = j.value("transactionIndex", "");
+    t.type = j.value("type", "");
+    t.nonce = j.value("nonce", "");
+    t.gas = j.value("gas", "");
+    t.value = j.value("value", "");
+    t.input = j.value("input", "");
+    t.maxPriorityFeePerGas = j.value("maxPriorityFeePerGas", "");
+    t.maxFeePerGas = j.value("maxFeePerGas", "");
+    t.maxFeePerBlobGas = j.value("maxFeePerBlobGas", "");
+    t.gasPrice = j.value("gasPrice", "");
+
+    // For vectors, default to empty vector
+    t.accessList = j.value("accessList", std::vector<AccessList>{});
+    t.blobVersionedHashes =
+        j.value("blobVersionedHashes", std::vector<std::string>{});
+
+    t.chainId = j.value("chainId", "");
+    t.yParity = j.value("yParity", "");
+    t.r = j.value("r", "");
+    t.s = j.value("s", "");
+    t.v = j.value("v", "");
+
+    if (j.contains("to") && !j["to"].is_null())
+        t.to = j[""].get<std::string>();
+    else
+        t.to = "";
 }
 
 struct Withdrawal
@@ -81,246 +105,205 @@ struct Withdrawal
     std::string amount;
 };
 
-inline void to_json(nlohmann::json& j, const Withdrawal& w)
-{
-    j = nlohmann::json {{"index", w.index},
-                        {"validatorIndex", w.validatorIndex},
-                        {"address", w.address},
-                        {"amount", w.amount}};
-}
-
 inline void from_json(const nlohmann::json& j, Withdrawal& w)
 {
-    j.at("index").get_to(w.index);
-    j.at("validatorIndex").get_to(w.validatorIndex);
-    j.at("address").get_to(w.address);
-    j.at("amount").get_to(w.amount);
+    w.index = j.value("index", "");
+    w.validatorIndex = j.value("validatorIndex", "");
+    w.address = j.value("address", "");
+    w.amount = j.value("amount", "");
 }
 
 struct Block
 {
-    std::string baseFeePerGas;
-    std::string difficulty;
-    std::string extraData;
+    std::string hash;
+    std::string parentHash;
+    std::string sha3Uncles;
+    std::string miner;
+    std::string stateRoot;
+    std::string transactionsRoot;
+    std::string receiptsRoot;
+    std::string logsBloom;
+    std::string difficulty = {};
+    std::string number;
     std::string gasLimit;
     std::string gasUsed;
-    std::string hash;
-    std::string logsBloom;
-    std::string miner;
+    std::string timestamp;
+    std::string extraData;
     std::string mixHash;
     std::string nonce;
-    std::string number;
-    std::string parentHash;
-    std::string receiptsRoot;
-    std::string sha3Uncles;
+    std::string baseFeePerGas = {};
+    std::string withdrawalsRoot = {};
     std::string size;
-    std::string stateRoot;
-    std::string timestamp;
-    std::vector<Transaction> transactions;
-    std::string transactionsRoot;
-    std::vector<std::string> uncles;
-    std::vector<Withdrawal> withdrawals;
-    std::string withdrawalsRoot;
+    std::vector<Transaction> transactions = {};
+    std::vector<std::string> transactionHashes = {};
+    std::vector<Withdrawal> withdrawals = {};
+    std::vector<std::string> uncles = {};
 };
-
-inline void to_json(nlohmann::json& j, const Block& b)
-{
-    j = nlohmann::json {{"number", b.number},
-                        {"hash", b.hash},
-                        {"parentHash", b.parentHash},
-                        {"nonce", b.nonce},
-                        {"sha3Uncles", b.sha3Uncles},
-                        {"logsBloom", b.logsBloom},
-                        {"transactionsRoot", b.transactionsRoot},
-                        {"stateRoot", b.stateRoot},
-                        {"receiptsRoot", b.receiptsRoot},
-                        {"miner", b.miner},
-                        {"mixHash", b.mixHash},
-                        {"difficulty", b.difficulty},
-                        {"extraData", b.extraData},
-                        {"size", b.size},
-                        {"gasLimit", b.gasLimit},
-                        {"gasUsed", b.gasUsed},
-                        {"timestamp", b.timestamp},
-                        {"transactions", b.transactions},
-                        {"uncles", b.uncles},
-                        {"baseFeePerGas", b.baseFeePerGas},
-                        {"withdrawals", b.withdrawals},
-                        {"withdrawalsRoot", b.withdrawalsRoot}};
-}
 
 inline void from_json(const nlohmann::json& j, Block& b)
 {
-    j.at("number").get_to(b.number);
-    j.at("hash").get_to(b.hash);
-    j.at("parentHash").get_to(b.parentHash);
-    j.at("nonce").get_to(b.nonce);
-    j.at("sha3Uncles").get_to(b.sha3Uncles);
-    j.at("logsBloom").get_to(b.logsBloom);
-    j.at("transactionsRoot").get_to(b.transactionsRoot);
-    j.at("stateRoot").get_to(b.stateRoot);
-    j.at("receiptsRoot").get_to(b.receiptsRoot);
-    j.at("miner").get_to(b.miner);
-    j.at("mixHash").get_to(b.mixHash);
-    j.at("difficulty").get_to(b.difficulty);
-    j.at("extraData").get_to(b.extraData);
-    j.at("size").get_to(b.size);
-    j.at("gasLimit").get_to(b.gasLimit);
-    j.at("gasUsed").get_to(b.gasUsed);
-    j.at("timestamp").get_to(b.timestamp);
-    j.at("transactions").get_to(b.transactions);
-    j.at("uncles").get_to(b.uncles);
-    j.at("baseFeePerGas").get_to(b.baseFeePerGas);
-    j.at("withdrawals").get_to(b.withdrawals);
-    j.at("withdrawalsRoot").get_to(b.withdrawalsRoot);
+    b.number = j.value("number", "");
+    b.hash = j.value("hash", "");
+    b.parentHash = j.value("parentHash", "");
+    b.nonce = j.value("nonce", "");
+    b.sha3Uncles = j.value("sha3Uncles", "");
+    b.logsBloom = j.value("logsBloom", "");
+    b.transactionsRoot = j.value("transactionsRoot", "");
+    b.stateRoot = j.value("stateRoot", "");
+    b.receiptsRoot = j.value("receiptsRoot", "");
+    b.miner = j.value("miner", "");
+    b.mixHash = j.value("mixHash", "");
+    b.difficulty = j.value("difficulty", "");
+    b.extraData = j.value("extraData", "");
+    b.size = j.value("size", "");
+    b.gasLimit = j.value("gasLimit", "");
+    b.gasUsed = j.value("gasUsed", "");
+    b.timestamp = j.value("timestamp", "");
+    b.uncles = j.value("uncles", std::vector<std::string>{});
+    b.baseFeePerGas = j.value("baseFeePerGas", "");
+    b.withdrawals = j.value("withdrawals", std::vector<Withdrawal>{});
+    b.withdrawalsRoot = j.value("withdrawalsRoot", "");
+
+    if (j.contains("transactions"))
+    {
+        if (!j["transactions"].empty() && j["transactions"][0].is_object())
+            j.at("transactions").get_to(b.transactions);
+        else if (!j["transactions"].empty() && j["transactions"][0].is_string())
+            j.at("transactions").get_to(b.transactionHashes);
+    }
 }
 
 struct Log
 {
-    std::string logIndex;
     bool removed = false;
-
-    std::string address;
-    std::vector<std::string> topics;
-    std::string data;
-
-    std::string blockNumber;
-    std::string blockTimestamp;
-    std::string blockHash;
+    std::string logIndex = {};
+    std::string transactionIndex = {};
     std::string transactionHash;
-    std::string transactionIndex;
+    std::string blockHash = {};
+    std::string blockNumber = {};
+    std::string blockTimestamp = {};
+    std::string address = {};
+    std::string data = {};
+    std::vector<std::string> topics = {};
 };
 
-inline void to_json(nlohmann::json& json, const Log& log)
+inline void from_json(const nlohmann::json& j, Log& l)
 {
-    json = nlohmann::json {{"logIndex", log.logIndex},
-                           {"removed", log.removed},
-                           {"blockNumber", log.blockNumber},
-                           {"blockTimestamp", log.blockTimestamp},
-                           {"blockHash", log.blockHash},
-                           {"transactionHash", log.transactionHash},
-                           {"transactionIndex", log.transactionIndex},
-                           {"address", log.address},
-                           {"data", log.data},
-                           {"topics", log.topics}};
-}
-
-inline void from_json(const nlohmann::json& json, Log& log)
-{
-    json.at("logIndex").get_to(log.logIndex);
-    json.at("address").get_to(log.address);
-    json.at("topics").get_to(log.topics);
-    json.at("data").get_to(log.data);
-    json.at("blockNumber").get_to(log.blockNumber);
-    json.at("blockTimestamp").get_to(log.blockTimestamp);
-    json.at("blockHash").get_to(log.blockHash);
-    json.at("transactionHash").get_to(log.transactionHash);
-    json.at("transactionIndex").get_to(log.transactionIndex);
-
-    if (json.contains("removed"))
-        json.at("removed").get_to(log.removed);
+    l.removed = j.value("removed", false);
+    l.logIndex = j.value("logIndex", "");
+    l.transactionIndex = j.value("transactionIndex", "");
+    l.transactionHash = j.value("transactionHash", "");
+    l.blockHash = j.value("blockHash", "");
+    l.blockNumber = j.value("blockNumber", "");
+    l.blockTimestamp = j.value("blockTimestamp", "");
+    l.address = j.value("address", "");
+    l.data = j.value("data", "");
+    l.topics = j.value("topics", std::vector<std::string>{});
 }
 
 struct Receipt
 {
-    std::string blockHash;
-    std::string blockNumber;
-    std::string contractAddress;
-    std::string cumulativeGasUsed;
-    std::string effectiveGasPrice;
-    std::string from;
-    std::string gasUsed;
-    std::vector<Log> logs;
-    std::string logsBloom;
-    std::string status;
-    std::string to;
+    std::string type = {};
     std::string transactionHash;
     std::string transactionIndex;
-    std::string type;
+    std::string blockHash;
+    std::string blockNumber;
+    std::string from;
+    std::string to = {};
+    std::string cumulativeGasUsed;
+    std::string gasUsed;
+    std::string blobGasUsed = {};
+    std::string contractAddress = {};
+    std::string logsBloom;
+    std::string root = {};
+    std::string status = {};
+    std::string effectiveGasPrice;
+    std::string bloGasPrice = {};
 };
-
-inline void to_json(nlohmann::json& j, const Receipt& r)
-{
-    j = nlohmann::json {{"blockHash", r.blockHash},
-                        {"blockNumber", r.blockNumber},
-                        {"contractAddress", r.contractAddress},
-                        {"cumulativeGasUsed", r.cumulativeGasUsed},
-                        {"effectiveGasPrice", r.effectiveGasPrice},
-                        {"from", r.from},
-                        {"gasUsed", r.gasUsed},
-                        {"logs", r.logs},
-                        {"logsBloom", r.logsBloom},
-                        {"status", r.status},
-                        {"to", r.to},
-                        {"transactionHash", r.transactionHash},
-                        {"transactionIndex", r.transactionIndex},
-                        {"type", r.type}};
-}
 
 inline void from_json(const nlohmann::json& j, Receipt& r)
 {
-    j.at("blockHash").get_to(r.blockHash);
-    j.at("blockNumber").get_to(r.blockNumber);
-    j.at("contractAddress").get_to(r.contractAddress);
-    j.at("cumulativeGasUsed").get_to(r.cumulativeGasUsed);
-    j.at("effectiveGasPrice").get_to(r.effectiveGasPrice);
-    j.at("from").get_to(r.from);
-    j.at("gasUsed").get_to(r.gasUsed);
-    j.at("logs").get_to(r.logs);
-    j.at("logsBloom").get_to(r.logsBloom);
-    j.at("status").get_to(r.status);
-    j.at("to").get_to(r.to);
-    j.at("transactionHash").get_to(r.transactionHash);
-    j.at("transactionIndex").get_to(r.transactionIndex);
-    j.at("type").get_to(r.type);
+    r.type = j.value("type", "");
+    r.transactionHash = j.value("transactionHash", "");
+    r.transactionIndex = j.value("transactionIndex", "");
+    r.blockHash = j.value("blockHash", "");
+    r.blockNumber = j.value("blockNumber", "");
+    r.from = j.value("from", "");
+    r.to = j.value("to", "");
+    r.cumulativeGasUsed = j.value("cumulativeGasUsed", "");
+    r.gasUsed = j.value("gasUsed", "");
+    r.blobGasUsed = j.value("blobGasUsed", "");
+    r.logsBloom = j.value("logsBloom", "");
+    r.root = j.value("root", "");
+    r.status = j.value("status", "");
+    r.effectiveGasPrice = j.value("effectiveGasPrice", "");
+    r.bloGasPrice = j.value("bloGasPrice", "");
+
+    if (j.contains("contractAddress") && !j["contractAddress"].is_null())
+        r.contractAddress = j["contractAddress"].get<std::string>();
+    else
+        r.contractAddress = "";
+
+    if (j.contains("to") && !j["to"].is_null())
+        r.to = j[""].get<std::string>();
+    else
+        r.to = "";
 }
 
 struct FeeHistory
 {
     std::string oldestBlock;
+    std::vector<std::string> baseFeePerGas = {};
+    std::vector<std::string> baseFerPerBlobGas = {};
+    std::vector<uint64_t> gasUsedRatio = {};
+    std::vector<uint64_t> blobGasUsedRatio = {};
     std::vector<std::vector<std::string>> reward;
-    std::vector<double> gasUsedRatio;
-    std::vector<std::string> baseFeePerGas;
 };
-
-inline void to_json(nlohmann::json& j, const FeeHistory& f)
-{
-    j = {{"oldestBlock", f.oldestBlock},
-         {"reward", f.reward},
-         {"baseFeePerGas", f.baseFeePerGas},
-         {"gasUsedRatio", f.gasUsedRatio}};
-}
 
 inline void from_json(const nlohmann::json& j, FeeHistory& f)
 {
-    j.at("oldestBlock").get_to(f.oldestBlock);
-    j.at("reward").get_to(f.reward);
-    j.at("baseFeePerGas").get_to(f.baseFeePerGas);
-    j.at("gasUsedRatio").get_to(f.gasUsedRatio);
+    f.oldestBlock = j.value("oldestBlock", "");
+
+    f.baseFeePerGas = j.value("baseFeePerGas", std::vector<std::string>{});
+    f.baseFerPerBlobGas =
+        j.value("baseFerPerBlobGas", std::vector<std::string>{});
+
+    if (j.contains("gasUsedRatio") && j["gasUsedRatio"].is_array())
+    {
+        f.gasUsedRatio.clear();
+        for (const auto& v : j["gasUsedRatio"])
+        {
+            if (!v.is_null())
+                f.gasUsedRatio.push_back(v.get<uint64_t>());
+        }
+    }
+
+    if (j.contains("blobGasUsedRatio") && j["blobGasUsedRatio"].is_array())
+    {
+        f.blobGasUsedRatio.clear();
+        for (const auto& v : j["blobGasUsedRatio"])
+        {
+            if (!v.is_null())
+                f.blobGasUsedRatio.push_back(v.get<uint64_t>());
+        }
+    }
+
+    if (j.contains("reward") && j["reward"].is_array())
+    {
+        f.reward.clear();
+        for (const auto& inner : j["reward"])
+        {
+            if (inner.is_array())
+            {
+                std::vector<std::string> temp;
+                for (const auto& s : inner)
+                {
+                    if (!s.is_null())
+                        temp.push_back(s.get<std::string>());
+                }
+                f.reward.push_back(std::move(temp));
+            }
+        }
+    }
 }
-
-struct Account
-{
-    std::string codeHash;
-    std::string storageRoot;
-    std::string balance;
-    std::string nonce;
-};
-
-inline void to_json(nlohmann::json& j, const Account& a)
-{
-    j = nlohmann::json {{"codeHash", a.codeHash},
-                        {"storageRoot", a.storageRoot},
-                        {"balance", a.balance},
-                        {"nonce", a.nonce}};
-}
-
-inline void from_json(const nlohmann::json& j, Account& a)
-{
-    j.at("codeHash").get_to(a.codeHash);
-    j.at("storageRoot").get_to(a.storageRoot);
-    j.at("balance").get_to(a.balance);
-    j.at("nonce").get_to(a.nonce);
-}
-
-} // namespace web3::type::response
+}  // namespace web3::type::response

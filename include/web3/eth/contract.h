@@ -11,18 +11,20 @@ namespace web3::eth
 
 class ContractMethod
 {
-public:
-    ContractMethod(const std::string& name, const nlohmann::json& abiMethod, web3::eth::RPC& rpc);
+   public:
+    ContractMethod(const std::string& name, const nlohmann::json& abiMethod,
+                   web3::eth::RPC& rpc);
 
     ContractMethod& param(const std::string& value);
     ContractMethod& param(uint64_t value);
     ContractMethod& param(bool value);
 
     std::string call(const std::string& to, const std::string& from = "");
-    std::string send(const std::string& from, const std::string& to, const std::string& value = "0",
+    std::string send(const std::string& from, const std::string& to,
+                     const std::string& value = "0",
                      const std::string& gas = "");
 
-private:
+   private:
     void reset();
     std::string encodeData();
 
@@ -36,20 +38,22 @@ private:
 
 class Contract
 {
-public:
-    Contract(const std::string& address, const nlohmann::json& abi, web3::eth::RPC& rpc);
+   public:
+    Contract(const std::string& address, const nlohmann::json& abi,
+             web3::eth::RPC& rpc);
 
     ContractMethod method(const ::std::string& name);
 
-    static std::string deploy(const nlohmann::json& abi, const std::string& bytecode,
+    static std::string deploy(const nlohmann::json& abi,
+                              const std::string& bytecode,
                               const std::string& from, web3::eth::RPC& rpc);
 
     std::string address() const;
 
-private:
+   private:
     std::string address_;
     nlohmann::json abi_;
     web3::eth::RPC& rpc;
 };
 
-} // namespace web3::eth
+}  // namespace web3::eth
