@@ -1,6 +1,5 @@
 #pragma once
 
-#include <jsonrpccxx/client.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
 
