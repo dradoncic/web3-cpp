@@ -2,6 +2,7 @@
 
 #include <jsonrpccxx/client.hpp>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <string>
 
 #include "core/client.h"
@@ -14,7 +15,7 @@ namespace web3::eth
 class RPC
 {
    public:
-    explicit RPC(web3::rpc::HTTPClient& connector)
+    explicit RPC(rpc::HTTPClient& connector)
         : connector_{connector},
           client_{jsonrpccxx::JsonRpcClient(connector, jsonrpccxx::version::v2)}
     {
@@ -24,20 +25,25 @@ class RPC
     std::string chainId();
     std::string gasPrice();
 
-    type::response::Block getBlockByNumber(uint64_t number);
-    type::response::Block getBlockByHash(const std::string& hash);
+    std::optional<type::response::Block> getBlockByNumber(uint64_t number);
+    std::optional<type::response::Block> getBlockByHash(
+        const std::string& hash);
 
-    std::string getBlockTransactionCountByNumber(uint64_t number);
-    std::string getBlockTransactionCountByHash(const std::string& hash);
+    std::optional<std::string> getBlockTransactionCountByNumber(
+        uint64_t number);
+    std::optional<std::string> getBlockTransactionCountByHash(
+        const std::string& hash);
 
-    type::response::Transaction getTransactionByHash(const std::string& hash);
-    type::response::Receipt getTransactionReceipt(const std::string& hash);
+    std::optional<type::response::Transaction> getTransactionByHash(
+        const std::string& hash);
+    std::optional<type::response::Receipt> getTransactionReceipt(
+        const std::string& hash);
 
     std::string getBalance(const type::request::Address& s);
     std::string getTransactionCount(const type::request::Address& s);
 
     std::string estimateGas(const type::request::Transaction& t);
-    std::string sendRawTransaction(const type::request::Transaction& t);
+    std::string sendRawTransaction(const std::string& signedTx);
 
    protected:
     jsonrpccxx::JsonRpcClient client_;

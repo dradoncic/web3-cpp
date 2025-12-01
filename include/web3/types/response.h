@@ -189,6 +189,12 @@ struct Log
 
 inline void from_json(const nlohmann::json& j, Log& l)
 {
+    if (j.is_string())
+    {
+        l.transactionHash = j.get<std::string>();
+        return;
+    }
+
     l.removed = j.value("removed", false);
     l.logIndex = j.value("logIndex", "");
     l.transactionIndex = j.value("transactionIndex", "");
