@@ -38,6 +38,9 @@ std::string stripLeadingZeros(const std::string& hex);
 web3::type::bytes concat(const web3::type::bytes& a,
                          const web3::type::bytes& b);
 
+// Uint256 Utilities
+type::bytes uint256ToBytes(const type::uint256& value);
+
 // Keccak Hash
 std::string keccak256(const web3::type::bytes& data);
 
@@ -55,5 +58,5 @@ std::string encodeFunctionSelector(const std::string& signature);
 std::string encodeUint(web3::type::uint256& value);
 std::string encodeAddress(const web3::type::address& address);
 std::string encodeBool(bool val);
-std::string encodeBytes(std::vector<uint8_t> bytes);
+std::string encodeBytes(type::bytes bytes);
 }  // namespace web3::utils
