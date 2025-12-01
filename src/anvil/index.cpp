@@ -12,15 +12,14 @@ RPC& Anvil::rpc()
     return rpc_;
 }
 
-web3::eth::Accounts& Anvil::accounts()
+eth::Accounts& Anvil::accounts()
 {
     return accounts_;
 }
 
-web3::eth::Contract Anvil::contract(const std::string& address,
-                                    nlohmann::json& abi)
+eth::Contract Anvil::contract(const std::string& address, nlohmann::json& abi)
 {
-    return web3::eth::Contract(address, abi, rpc_);
+    return eth::Contract(address, abi, rpc_);
 }
 
 }  // namespace web3::anvil
