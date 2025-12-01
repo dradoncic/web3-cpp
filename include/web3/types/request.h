@@ -1,10 +1,11 @@
 #pragma once
 
 #include <types/response.h>
-#include <utils.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
+
+#include "utils.h"
 
 namespace web3::type::request
 {

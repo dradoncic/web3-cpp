@@ -312,4 +312,5 @@ inline void from_json(const nlohmann::json& j, FeeHistory& f)
         }
     }
 }
+
 }  // namespace web3::type::response

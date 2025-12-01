@@ -1,11 +1,11 @@
 #pragma once
 
-#include <jsonrpccxx/client.hpp>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 
 #include "core/client.h"
+#include "core/connector.h"
 #include "types/request.h"
 #include "types/response.h"
 
@@ -16,8 +16,7 @@ class RPC
 {
    public:
     explicit RPC(rpc::HTTPClient& connector)
-        : connector_{connector},
-          client_{jsonrpccxx::JsonRpcClient(connector, jsonrpccxx::version::v2)}
+        : connector_{connector}, client_{rpc::JsonRPCClient(connector)}
     {
     }
 
@@ -46,7 +45,7 @@ class RPC
     std::string sendRawTransaction(const std::string& signedTx);
 
    protected:
-    jsonrpccxx::JsonRpcClient client_;
+    rpc::JsonRPCClient client_;
     rpc::HTTPClient& connector_;
 };
 
