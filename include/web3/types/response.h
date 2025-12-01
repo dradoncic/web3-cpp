@@ -92,7 +92,7 @@ inline void from_json(const nlohmann::json& j, Transaction& t)
     t.v = j.value("v", "");
 
     if (j.contains("to") && !j["to"].is_null())
-        t.to = j[""].get<std::string>();
+        t.to = j["to"].get<std::string>();
     else
         t.to = "";
 }
@@ -218,7 +218,7 @@ struct Receipt
     std::string root = {};
     std::string status = {};
     std::string effectiveGasPrice;
-    std::string bloGasPrice = {};
+    std::string blobGasPrice = {};
 };
 
 inline void from_json(const nlohmann::json& j, Receipt& r)
@@ -237,7 +237,7 @@ inline void from_json(const nlohmann::json& j, Receipt& r)
     r.root = j.value("root", "");
     r.status = j.value("status", "");
     r.effectiveGasPrice = j.value("effectiveGasPrice", "");
-    r.bloGasPrice = j.value("bloGasPrice", "");
+    r.blobGasPrice = j.value("blobGasPrice", "");
 
     if (j.contains("contractAddress") && !j["contractAddress"].is_null())
         r.contractAddress = j["contractAddress"].get<std::string>();
@@ -245,7 +245,7 @@ inline void from_json(const nlohmann::json& j, Receipt& r)
         r.contractAddress = "";
 
     if (j.contains("to") && !j["to"].is_null())
-        r.to = j[""].get<std::string>();
+        r.to = j["to"].get<std::string>();
     else
         r.to = "";
 }

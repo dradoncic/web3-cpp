@@ -1,6 +1,5 @@
 #include "utils.h"
 
-#include <cctype>
 #include <cryptopp/eccrypto.h>
 #include <cryptopp/filters.h>
 #include <cryptopp/hex.h>
@@ -9,6 +8,8 @@
 #include <cryptopp/oids.h>
 #include <cryptopp/osrng.h>
 #include <gmpxx.h>
+
+#include <cctype>
 #include <stdexcept>
 
 namespace web3::utils
@@ -51,8 +52,10 @@ std::string toWei(const std::string& amount, const std::string& unit)
 
     auto dotPos = amount.find('.');
 
-    std::string intPart = (dotPos == std::string::npos) ? amount : amount.substr(0, dotPos);
-    std::string fracPart = (dotPos == std::string::npos) ? "0" : amount.substr(dotPos + 1);
+    std::string intPart =
+        (dotPos == std::string::npos) ? amount : amount.substr(0, dotPos);
+    std::string fracPart =
+        (dotPos == std::string::npos) ? "0" : amount.substr(dotPos + 1);
 
     if (fracPart.size() > static_cast<size_t>(exp))
         fracPart = fracPart.substr(0, exp);
@@ -73,7 +76,8 @@ std::string fromWei(const std::string& amount, const std::string& unit)
     if (amount.size() <= static_cast<size_t>(exp))
         result = "0." + std::string(exp - amount.size(), '0') + amount;
     else
-        result = amount.substr(0, amount.size() - exp) + "." + amount.substr(amount.size() - exp);
+        result = amount.substr(0, amount.size() - exp) + "." +
+                 amount.substr(amount.size() - exp);
 
     while (result.back() == '0')
         result.pop_back();
@@ -115,8 +119,9 @@ std::vector<uint8_t> hexToBytes(const std::string& hex)
 
     std::vector<uint8_t> bytes(hex_n.size() / 2);
 
-    CryptoPP::StringSource ss(
-        hex_n, true, new CryptoPP::HexDecoder(new CryptoPP::ArraySink(bytes.data(), bytes.size())));
+    CryptoPP::StringSource ss(hex_n, true,
+                              new CryptoPP::HexDecoder(new CryptoPP::ArraySink(
+                                  bytes.data(), bytes.size())));
 
     return bytes;
 }
@@ -160,7 +165,8 @@ std::string stripLeadingZeros(const std::string& hex)
     return "0x" + hex_n.substr(pos);
 }
 
-std::vector<uint8_t> concat(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b)
+std::vector<uint8_t> concat(const std::vector<uint8_t>& a,
+                            const std::vector<uint8_t>& b)
 {
     std::vector<uint8_t> newVec;
     newVec.insert(newVec.end(), a.begin(), a.end());
@@ -282,7 +288,8 @@ std::vector<uint8_t> rlpEncode(const std::vector<uint8_t>& input)
     return encoded;
 }
 
-std::vector<uint8_t> rlpEncodeList(const std::vector<std::vector<uint8_t>>& inputs)
+std::vector<uint8_t> rlpEncodeList(
+    const std::vector<std::vector<uint8_t>>& inputs)
 {
     std::vector<uint8_t> encoded;
     for (auto& it : inputs)
@@ -333,7 +340,8 @@ std::string toChecksumAddress(const std::string& address)
         char c = addr[i];
         char h = hashHex[i];
 
-        uint8_t hval = (h >= '0' && h <= '9') ? h - '0' : (tolower(h) - 'a' + 10);
+        uint8_t hval =
+            (h >= '0' && h <= '9') ? h - '0' : (tolower(h) - 'a' + 10);
 
         if (hval >= 8)
             addr[i] = toupper(c);
@@ -342,4 +350,4 @@ std::string toChecksumAddress(const std::string& address)
     return ensureHexPrefix(addr);
 }
 
-} // namespace web3::utils
+}  // namespace web3::utils
