@@ -12,79 +12,31 @@
 #include <cctype>
 #include <stdexcept>
 
+#include "types/native.h"
+
 namespace web3::utils
 {
 
-std::string BN::add(const std::string& a, const std::string& b, int base)
-{
-    mpz_class sum(a, base);
-    sum += mpz_class(b, base);
-    return sum.get_str(base);
-}
-
-std::string BN::sub(const std::string& a, const std::string& b, int base)
-{
-    mpz_class diff(a, base);
-    diff -= mpz_class(b, base);
-    return diff.get_str(base);
-}
-
-std::string BN::mul(const std::string& a, const std::string& b, int base)
-{
-    mpz_class prod(a, base);
-    prod *= mpz_class(b, base);
-    return prod.get_str(base);
-}
-
-std::string BN::div(const std::string& a, const std::string& b, int base)
-{
-    mpz_class quotient(a, base);
-    quotient /= mpz_class(b, base);
-    return quotient.get_str(base);
-}
-
-std::string toWei(const std::string& amount, const std::string& unit)
+type::uint256 toWei(const type::uint256& amount, const std::string& unit)
 {
     auto it = unitMap.find(unit);
     if (it == unitMap.end())
         throw std::runtime_error("Unknown unit: " + unit);
-    int exp = static_cast<int>(it->second);
 
-    auto dotPos = amount.find('.');
-
-    std::string intPart =
-        (dotPos == std::string::npos) ? amount : amount.substr(0, dotPos);
-    std::string fracPart =
-        (dotPos == std::string::npos) ? "0" : amount.substr(dotPos + 1);
-
-    if (fracPart.size() > static_cast<size_t>(exp))
-        fracPart = fracPart.substr(0, exp);
-    else
-        fracPart.append(exp - fracPart.size(), '0');
-
-    return intPart + fracPart;
+    mpz_class factor = 1;
+    mpz_ui_pow_ui(factor.get_mpz_t(), 10, static_cast<int>(it->second));
+    return type::uint256(amount.v * factor);
 }
 
-std::string fromWei(const std::string& amount, const std::string& unit)
+type::uint256 fromWei(const type::uint256& amount, const std::string& unit)
 {
     auto it = unitMap.find(unit);
     if (it == unitMap.end())
         throw std::runtime_error("Unknown unit: " + unit);
-    int exp = static_cast<int>(it->second);
 
-    std::string result;
-    if (amount.size() <= static_cast<size_t>(exp))
-        result = "0." + std::string(exp - amount.size(), '0') + amount;
-    else
-        result = amount.substr(0, amount.size() - exp) + "." +
-                 amount.substr(amount.size() - exp);
-
-    while (result.back() == '0')
-        result.pop_back();
-    if (result.back() == '.')
-        result.pop_back();
-
-    return result;
+    mpz_class factor = 1;
+    mpz_ui_pow_ui(factor.get_mpz_t(), 10, static_cast<int>(it->second));
+    return type::uint256(amount.v / factor);
 }
 
 bool isHex(const std::string& hex)
@@ -111,22 +63,22 @@ std::string removeHexPrefix(const std::string& hex)
     return hex;
 }
 
-std::vector<uint8_t> hexToBytes(const std::string& hex)
+type::bytes hexToBytes(const std::string& hex)
 {
     std::string hex_n = removeHexPrefix(hex);
     if (hex_n.size() & 1)
         hex_n = "0" + hex_n;
 
-    std::vector<uint8_t> bytes(hex_n.size() / 2);
+    type::bytes out(hex_n.size() / 2);
 
     CryptoPP::StringSource ss(hex_n, true,
                               new CryptoPP::HexDecoder(new CryptoPP::ArraySink(
-                                  bytes.data(), bytes.size())));
+                                  out.data(), out.size())));
 
-    return bytes;
+    return out;
 }
 
-std::string bytesToHex(const std::vector<uint8_t>& bytes)
+std::string bytesToHex(const type::bytes& bytes)
 {
     std::string hex;
     CryptoPP::HexEncoder encoder(new CryptoPP::StringSink(hex), false);
@@ -137,22 +89,10 @@ std::string bytesToHex(const std::vector<uint8_t>& bytes)
     return "0x" + hex;
 }
 
-uint64_t hexToInt(const std::string& hex)
-{
-    return std::stoull(hex, nullptr, 16);
-}
-
-std::string intToHex(uint64_t dec)
-{
-    char buf[17];
-    snprintf(buf, sizeof(buf), "%llx", (unsigned long long)dec);
-    return ensureHexPrefix(buf);
-}
-
 std::string padLeft(const std::string& hex, size_t length)
 {
     auto hex_n = removeHexPrefix(hex);
-    hex_n.insert(0, length - hex.size(), '0');
+    hex_n.insert(0, length - hex_n.size(), '0');
     return "0x" + hex_n;
 }
 
@@ -165,13 +105,11 @@ std::string stripLeadingZeros(const std::string& hex)
     return "0x" + hex_n.substr(pos);
 }
 
-std::vector<uint8_t> concat(const std::vector<uint8_t>& a,
-                            const std::vector<uint8_t>& b)
+type::bytes concat(const type::bytes& a, const type::bytes& b)
 {
-    std::vector<uint8_t> newVec;
-    newVec.insert(newVec.end(), a.begin(), a.end());
-    newVec.insert(newVec.end(), b.begin(), b.end());
-    return newVec;
+    type::bytes out = a;
+    out.insert(out.end(), b.begin(), b.end());
+    return out;
 }
 
 /**
@@ -192,7 +130,7 @@ std::vector<uint8_t> concat(const std::vector<uint8_t>& a,
  * std::string hash = keccak256(myData);
  * // hash = "0x..." (64 hex characters)
  */
-std::string keccak256(const std::vector<uint8_t>& data)
+std::string keccak256(const type::bytes& data)
 {
     CryptoPP::Keccak_256 hash;
 
@@ -226,7 +164,7 @@ std::string privateKeyToPublicKey(const std::string& privateKey)
     return bytesToHex(pubBytes);
 }
 
-std::string publicKeyToAddress(const std::string& publicKey)
+type::address publicKeyToAddress(const std::string& publicKey)
 {
     auto pubBytes = hexToBytes(publicKey);
     if (pubBytes.size() != 64)
@@ -238,116 +176,84 @@ std::string publicKeyToAddress(const std::string& publicKey)
     hash.Update(pubBytes.data(), pubBytes.size());
     hash.TruncatedFinal(digest.data(), digest.size());
 
-    std::vector<uint8_t> addr(digest.end() - 20, digest.end());
-    auto raw_addr = bytesToHex(addr);
-
-    return toChecksumAddress(raw_addr);
+    type::address addr;
+    std::copy(digest.end() - 20, digest.end(), addr.bytes.begin());
+    return addr;
 }
 
-std::vector<uint8_t> intToBytes(uint64_t value)
+type::address privateKeyToAddress(const std::string& privateKey)
 {
-    std::vector<uint8_t> bytes;
+    return publicKeyToAddress(privateKeyToPublicKey(privateKey));
+}
 
-    bool leading = true;
-    for (int i = 7; i >= 0; --i)
-    {
-        uint8_t b = (value >> (i * 8)) & 0xFF;
-        if (b == 0 && leading)
-            continue;
-        leading = false;
-        bytes.push_back(b);
-    }
+type::bytes uint256ToBytes(const type::uint256& value)
+{
+    type::bytes bytes(32);
 
-    if (bytes.empty())
-        bytes.push_back(0);
+    mpz_export(bytes.data(),        // output buffer
+               nullptr,             // number of limbs written (can ignore)
+               1,                   // most significant word first
+               1,                   // size of each word in bytes
+               1,                   // big-endian within each word
+               0,                   // no nails
+               value.v.get_mpz_t()  // GMP integer
+    );
 
     return bytes;
 }
 
-std::vector<uint8_t> rlpEncode(const std::vector<uint8_t>& input)
+type::bytes rlpEncode(const type::bytes& input)
 {
-    auto len = input.size();
-    std::vector<uint8_t> encoded;
-
+    size_t len = input.size();
+    type::bytes out;
     if (len == 0)
-        encoded.push_back(0x80);
+        out.push_back(0x80);
     else if (len == 1 && input[0] <= 0x7f)
-        encoded.push_back(input[0]);
+        out.push_back(input[0]);
     else if (len <= 55)
     {
-        encoded.push_back(0x80 + static_cast<uint8_t>(len));
-        encoded.insert(encoded.end(), input.begin(), input.end());
+        out.push_back(0x80 + len);
+        out.insert(out.end(), input.begin(), input.end());
     }
     else
     {
-        auto lenBytes = intToBytes(len);
-        encoded.push_back(0xB7 + static_cast<uint8_t>(lenBytes.size()));
-        encoded.insert(encoded.end(), lenBytes.begin(), lenBytes.end());
-        encoded.insert(encoded.end(), input.begin(), input.end());
+        type::bytes lenBytes = uint256ToBytes(type::uint256(len));
+        // remove leading zeros
+        auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
+                                [](uint8_t b) { return b != 0; });
+        lenBytes = type::bytes(pos, lenBytes.end());
+        out.push_back(0xB7 + lenBytes.size());
+        out.insert(out.end(), lenBytes.begin(), lenBytes.end());
+        out.insert(out.end(), input.begin(), input.end());
     }
-    return encoded;
+    return out;
 }
 
-std::vector<uint8_t> rlpEncodeList(
-    const std::vector<std::vector<uint8_t>>& inputs)
+type::bytes rlpEncodeList(const std::vector<type::bytes>& inputs)
 {
-    std::vector<uint8_t> encoded;
-    for (auto& it : inputs)
+    type::bytes encoded;
+    for (const auto& item : inputs)
     {
-        auto encodedItem = rlpEncode(it);
-        encoded.insert(encoded.end(), encodedItem.begin(), encodedItem.end());
+        auto e = rlpEncode(item);
+        encoded.insert(encoded.end(), e.begin(), e.end());
     }
 
     size_t len = encoded.size();
-    std::vector<uint8_t> res;
-
+    type::bytes out;
     if (len <= 55)
     {
-        res.push_back(0xC0 + static_cast<uint8_t>(len));
-        res.insert(res.end(), encoded.begin(), encoded.end());
+        out.push_back(0xC0 + len);
     }
     else
     {
-        auto lenBytes = intToBytes(len);
-        res.push_back(0xF7 + static_cast<uint8_t>(lenBytes.size()));
-        res.insert(res.end(), lenBytes.begin(), lenBytes.end());
-        res.insert(res.end(), encoded.begin(), encoded.end());
+        type::bytes lenBytes = uint256ToBytes(type::uint256(len));
+        auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
+                                [](uint8_t b) { return b != 0; });
+        lenBytes = type::bytes(pos, lenBytes.end());
+        out.push_back(0xF7 + lenBytes.size());
+        out.insert(out.end(), lenBytes.begin(), lenBytes.end());
     }
-
-    return res;
+    out.insert(out.end(), encoded.begin(), encoded.end());
+    return out;
 }
-
-bool isAddress(const std::string& address)
-{
-    auto addr = removeHexPrefix(address);
-
-    if (addr.size() != 40)
-        return false;
-
-    return isHex(addr);
-}
-
-std::string toChecksumAddress(const std::string& address)
-{
-    auto addr = removeHexPrefix(address);
-    std::transform(addr.begin(), addr.end(), addr.begin(), ::tolower);
-
-    auto addrBytes = hexToBytes(addr);
-    auto hashHex = removeHexPrefix(keccak256(addrBytes));
-
-    for (auto i = 0; i < addr.size(); i++)
-    {
-        char c = addr[i];
-        char h = hashHex[i];
-
-        uint8_t hval =
-            (h >= '0' && h <= '9') ? h - '0' : (tolower(h) - 'a' + 10);
-
-        if (hval >= 8)
-            addr[i] = toupper(c);
-    }
-
-    return ensureHexPrefix(addr);
-}
-
 }  // namespace web3::utils

@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 
+#include "types/native.h"
 #include "types/request.h"
 
 namespace web3::eth
@@ -10,9 +11,21 @@ namespace web3::eth
 
 struct Account
 {
-    std::string address;
+    type::address address;
     std::string privateKey;
     uint64_t nonce = 0;
+
+    Account() = default;
+    Account(const type::address& addr, const std::string& privKey,
+            uint64_t nonce = 0)
+        : address(addr), privateKey(privKey), nonce(nonce)
+    {
+    }
+
+    std::string checksumAddress() const
+    {
+        return address.toChecksumAddress();
+    }
 };
 
 class Wallet
