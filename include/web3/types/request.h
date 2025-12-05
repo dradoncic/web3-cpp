@@ -13,117 +13,117 @@ namespace web3::type::request
 
 struct Transaction
 {
-    std::string type = {};
-    std::string nonce;
-    std::string to = {};
-    std::string from;
-    std::string gas = {};
-    std::string value = {};
-    std::string input = {};
-    std::string gasPrice = {};
-    std::string maxPriorityFeePerGas = {};
-    std::string maxFeePerGas = {};
-    std::string maxFeePerBlobGas = {};
-    std::vector<response::AccessList> accessList = {};
-    std::vector<std::string> blobVersionedHashes = {};
-    std::vector<std::string> blobs = {};
-    std::string chainId = {};
-    std::vector<response::AuthorizationList> authorizationList = {};
+
+    uint8_t type;
+    uint256 nonce;
+    address to;
+    address from;
+    uint256 gas;
+    uint256 value;
+    bytes input;
+    uint256 gasPrice;
+    uint256 maxPriorityFeePerGas;
+    uint256 maxFeePerGas;
+    uint256 maxFeePerBlobGas;
+    std::vector<response::AccessList> accessList;
+    std::vector<web3::type::uint256> blobVersionedHashes;
+    web3::type::uint256 chainId;
+    std::vector<response::AuthorizationList> authorizationList;
 
     // Legacy Transaction
     Transaction(const uint256& nonce, const uint256& gasPrice, const uint256& gas,
-                const std::string& to, const std::string& from, const uint256& value,
-                const std::string& input = {})
+                const address& to, const address& from, const uint256& value,
+                const bytes& input = {})
         : from(from),
-          type(uint256(0).toHex()),
-          nonce(nonce.toHex()),
-          gasPrice(gasPrice.toHex()),
-          gas(gas.toHex()),
+          type(0),
+          nonce(nonce),
+          gasPrice(gasPrice),
+          gas(gas),
           to(to),
-          value(value.toHex()),
+          value(value),
           input(input)
     {
     }
 
     // EIP-2930 Transaction
     Transaction(const uint256& nonce, const uint256& gasPrice, const uint256& gas,
-                const std::string& to, const std::string& from, const uint256& value,
+                const address& to, const address& from, const uint256& value,
                 const std::vector<response::AccessList>& accessList,
-                const uint256& chainId, const std::string& input = {})
+                const uint256& chainId, const bytes& input = {})
         : from(from),
-          type(uint256(1).toHex()),
-          chainId(chainId.toHex()),
-          nonce(nonce.toHex()),
-          gasPrice(gasPrice.toHex()),
-          gas(gas.toHex()),
+          type(1),
+          chainId(chainId),
+          nonce(nonce),
+          gasPrice(gasPrice),
+          gas(gas),
           to(to),
-          value(value.toHex()),
+          value(value),
           input(input),
           accessList(accessList)
     {
     }
 
     // EIP-1559 Transaction
-    Transaction(const uint256& nonce, const uint256& gas, const std::string& to,
-                const std::string& from, const uint256& value,
+    Transaction(const uint256& nonce, const uint256& gas, const address& to,
+                const address& from, const uint256& value,
                 const std::vector<response::AccessList>& accessList,
                 const uint256& chainId, const uint256& maxPriorityFeePerGas,
-                const uint256& maxFeePerGas, const std::string& input = {})
+                const uint256& maxFeePerGas, const bytes& input = {})
         : from(from),
-          type(uint256(2).toHex()),
-          chainId(chainId.toHex()),
-          nonce(nonce.toHex()),
-          maxPriorityFeePerGas(maxPriorityFeePerGas.toHex()),
-          maxFeePerGas(maxFeePerGas.toHex()),
-          gas(gas.toHex()),
+          type(2),
+          chainId(chainId),
+          nonce(nonce),
+          maxPriorityFeePerGas(maxPriorityFeePerGas),
+          maxFeePerGas(maxFeePerGas),
+          gas(gas),
           to(to),
-          value(value.toHex()),
+          value(value),
           input(input),
           accessList(accessList)
     {
     }
 
     // EIP-4844 Transaction
-    Transaction(const uint256& nonce, const uint256& gas, const std::string& to,
-                const std::string& from, const uint256& value,
+    Transaction(const uint256& nonce, const uint256& gas, const address& to,
+                const address& from, const uint256& value,
                 const std::vector<response::AccessList>& accessList,
                 const uint256& chainId, const uint256& maxPriorityFeePerGas,
                 const uint256& maxFeePerGas, const uint256& maxFeePerBlobGas,
-                const std::vector<std::string>& blobVersionedHashes,
-                const std::string& input = {})
+                const std::vector<uint256>& blobVersionedHashes,
+                const bytes& input = {})
         : from(from),
-          type(uint256(3).toHex()),
-          chainId(chainId.toHex()),
-          nonce(nonce.toHex()),
-          maxPriorityFeePerGas(maxPriorityFeePerGas.toHex()),
-          maxFeePerGas(maxFeePerGas.toHex()),
-          gas(gas.toHex()),
+          type(3),
+          chainId(chainId),
+          nonce(nonce),
+          maxPriorityFeePerGas(maxPriorityFeePerGas),
+          maxFeePerGas(maxFeePerGas),
+          gas(gas),
           to(to),
-          value(value.toHex()),
+          value(value),
           input(input),
           accessList(accessList),
-          maxFeePerBlobGas(maxFeePerBlobGas.toHex()),
+          maxFeePerBlobGas(maxFeePerBlobGas),
           blobVersionedHashes(blobVersionedHashes)
     {
     }
 
     // EIP-7702 Transaction
-    Transaction(const uint256& nonce, const uint256& gas, const std::string& to,
-                const std::string& from, const uint256& value,
+    Transaction(const uint256& nonce, const uint256& gas, const address& to,
+                const address& from, const uint256& value,
                 const std::vector<response::AccessList>& accessList,
                 const uint256& chainId, const uint256& maxPriorityFeePerGas,
                 const uint256& maxFeePerGas,
                 const std::vector<response::AuthorizationList>& authorizationList,
-                const std::string& input = {})
+                const bytes& input = {})
         : from(from),
-          type(uint256(4).toHex()),
-          chainId(chainId.toHex()),
-          nonce(nonce.toHex()),
-          maxPriorityFeePerGas(maxPriorityFeePerGas.toHex()),
-          maxFeePerGas(maxFeePerGas.toHex()),
-          gas(gas.toHex()),
+          type(4),
+          chainId(chainId),
+          nonce(nonce),
+          maxPriorityFeePerGas(maxPriorityFeePerGas),
+          maxFeePerGas(maxFeePerGas),
+          gas(gas),
           to(to),
-          value(value.toHex()),
+          value(value),
           input(input),
           accessList(accessList),
           authorizationList(authorizationList)
@@ -133,7 +133,7 @@ struct Transaction
 
 struct Address
 {
-    std::string address;
+    address address;
     std::string block = "latest";
 };
 
@@ -147,14 +147,14 @@ inline void to_json(nlohmann::json& j, const Address& b)
             j[key] = value;
     };
 
-    put("address", b.address);
+    put("address", b.address.toHex());
     put("block", b.block);
 }
 
 struct Balance
 {
-    std::string address;
-    std::string balance;
+    address address;
+    uint256 balance; // amount of wei
 };
 
 inline void to_json(nlohmann::json& j, const Balance& b)
@@ -167,8 +167,8 @@ inline void to_json(nlohmann::json& j, const Balance& b)
             j[key] = value;
     };
 
-    put("address", b.address);
-    put("balance", b.balance);
+    put("address", b.address.toHex());
+    put("balance", b.balance.toHex());
 }
 
 }  // namespace web3::type::request
