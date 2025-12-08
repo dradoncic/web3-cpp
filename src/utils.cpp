@@ -13,8 +13,10 @@
 
 #include <cctype>
 #include <stdexcept>
+#include <utility>
 
 #include "types/native.h"
+#include "types/response.h"
 
 namespace web3::utils
 {
@@ -219,8 +221,8 @@ Signature signHash(const std::string& privKey, const type::bytes& hash)
                                                       SECP256K1_CONTEXT_VERIFY);
 
     secp256k1_ecdsa_recoverable_signature sig;
-    secp256k1_ecdsa_sign_recoverable(ctx, &sig, hash.data(),
-                                     privBytes.data(), nullptr, nullptr);
+    secp256k1_ecdsa_sign_recoverable(ctx, &sig, hash.data(), privBytes.data(),
+                                     nullptr, nullptr);
 
     type::bytes compact(64);
     int recid;
@@ -250,70 +252,108 @@ type::bytes encodeUint256(const type::uint256& value)
 
 type::bytes encodeAddress(const type::address& addr)
 {
-    return encodeBytes(std::vector<uint8_t>(addr.bytes.begin(), addr.bytes.end()));
+    return encodeBytes(
+        std::vector<uint8_t>(addr.bytes.begin(), addr.bytes.end()));
 }
 
-type::bytes encodeAccessList(const std::vector<type::response::AccessList>& accessList)
+type::bytes encodeAccessList(
+    const std::vector<type::response::AccessList>& accessList)
 {
+    std::vector<type::bytes> entries;
 
+    for (auto& access : accessList)
+    {
+        std::vector<type::bytes> storage_keys;
+        for (auto& key : access.storageKeys)
+        {
+            storage_keys.push_back(hexToBytes(key));
+        }
+        type::bytes encoded_storage_keys = encodeList(storage_keys);
+
+        std::vector<type::bytes> entry = {encodeAddress(access.address),
+                                          encoded_storage_keys};
+
+        type::bytes encoded_entry = encodeList(entry);
+
+        entries.push_back(encoded_entry);
+    }
+
+    return encodeList(entries);
 }
 
+type::bytes encodeAuthorizationList(
+    const std::vector<type::response::AuthorizationList>& authList)
+{
+    std::vector<type::bytes> entries;
 
-} // namespace rlp
+    for (auto& auth : authList)
+    {
+        std::vector<type::bytes> entry = {
+            encodeUint256(auth.chainId),     encodeAddress(auth.address),
+            encodeUint256(auth.nonce),       encodeUint256(auth.yParity),
+            encodeBytes(hexToBytes(auth.r)), encodeBytes(hexToBytes(auth.s))};
 
-// type::bytes rlpEncode(const type::bytes& input)
-// {
-//     size_t len = input.size();
-//     type::bytes out;
-//     if (len == 0)
-//         out.push_back(0x80);
-//     else if (len == 1 && input[0] <= 0x7f)
-//         out.push_back(input[0]);
-//     else if (len <= 55)
-//     {
-//         out.push_back(0x80 + len);
-//         out.insert(out.end(), input.begin(), input.end());
-//     }
-//     else
-//     {
-//         type::bytes lenBytes = uint256ToBytes(type::uint256(len));
-//         // remove leading zeros
-//         auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
-//                                 [](uint8_t b) { return b != 0; });
-//         lenBytes = type::bytes(pos, lenBytes.end());
-//         out.push_back(0xB7 + lenBytes.size());
-//         out.insert(out.end(), lenBytes.begin(), lenBytes.end());
-//         out.insert(out.end(), input.begin(), input.end());
-//     }
-//     return out;
-// }
+        auto encoded_entries = encodeList(entry);
+        entries.push_back(encoded_entries);
+    }
+    return encodeList(entries);
+}
 
-// type::bytes rlpEncodeList(const std::vector<type::bytes>& inputs)
-// {
-//     type::bytes encoded;
-//     for (const auto& item : inputs)
-//     {
-//         auto e = rlpEncode(item);
-//         encoded.insert(encoded.end(), e.begin(), e.end());
-//     }
+type::bytes encodeList(const std::vector<type::bytes>& items)
+{
+    type::bytes encoded;
+    for (const auto& item : items)
+    {
+        auto e = encodeBytes(item);
+        encoded.insert(encoded.end(), e.begin(), e.end());
+    }
 
-//     size_t len = encoded.size();
-//     type::bytes out;
-//     if (len <= 55)
-//     {
-//         out.push_back(0xC0 + len);
-//     }
-//     else
-//     {
-//         type::bytes lenBytes = uint256ToBytes(type::uint256(len));
-//         auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
-//                                 [](uint8_t b) { return b != 0; });
-//         lenBytes = type::bytes(pos, lenBytes.end());
-//         out.push_back(0xF7 + lenBytes.size());
-//         out.insert(out.end(), lenBytes.begin(), lenBytes.end());
-//     }
-//     out.insert(out.end(), encoded.begin(), encoded.end());
-//     return out;
-// }
+    size_t len = encoded.size();
+    type::bytes out;
+    if (len <= 55)
+    {
+        out.push_back(0xC0 + len);
+    }
+    else
+    {
+        type::bytes lenBytes = uint256ToBytes(static_cast<uint64_t>(len));
+        auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
+                                [](uint8_t b) { return b != 0; });
+        lenBytes = type::bytes(pos, lenBytes.end());
+        out.push_back(0xF7 + lenBytes.size());
+        out.insert(out.end(), lenBytes.begin(), lenBytes.end());
+    }
+    out.insert(out.end(), encoded.begin(), encoded.end());
+    return out;
+}
+
+type::bytes encodeBytes(const type::bytes& bytes)
+{
+    size_t len = bytes.size();
+    type::bytes out;
+    if (len == 0)
+        out.push_back(0x80);
+    else if (len == 1 && bytes[0] <= 0x7f)
+        out.push_back(bytes[0]);
+    else if (len <= 55)
+    {
+        out.push_back(0x80 + len);
+        out.insert(out.end(), bytes.begin(), bytes.end());
+    }
+    else
+    {
+        type::bytes lenBytes = uint256ToBytes(static_cast<uint64_t>(len));
+        // remove leading zeros
+        auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
+                                [](uint8_t b) { return b != 0; });
+        lenBytes = type::bytes(pos, lenBytes.end());
+        out.push_back(0xB7 + lenBytes.size());
+        out.insert(out.end(), lenBytes.begin(), lenBytes.end());
+        out.insert(out.end(), bytes.begin(), bytes.end());
+    }
+    return out;
+}
+
+}  // namespace rlp
 
 }  // namespace web3::utils

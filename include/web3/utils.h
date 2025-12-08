@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "types/response.h"
 #include "types/native.h"
 #include "types/request.h"
+#include "types/response.h"
 
 namespace web3::utils
 {
@@ -80,13 +80,19 @@ type::bytes encodeAccessList(
 type::bytes encodeAuthorizationList(
     const std::vector<type::response::AuthorizationList>& authList);
 
-std::vector<type::bytes> encodeLegacyTransaction(const type::request::Transaction& tx);
-std::vector<type::bytes> encodeEIP2930Transaction(const type::request::Transaction& tx);
-std::vector<type::bytes> encodeEIP1559Transaction(const type::request::Transaction& tx);
-std::vector<type::bytes> encodeEIP4844Transaction(const type::request::Transaction& tx);
-std::vector<type::bytes> encodeEIP7702Transaction(const type::request::Transaction& tx);
+std::vector<type::bytes> encodeLegacyTransaction(
+    const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP2930Transaction(
+    const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP1559Transaction(
+    const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP4844Transaction(
+    const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP7702Transaction(
+    const type::request::Transaction& tx);
 
-std::vector<type::bytes> getEncodedTransactionItems(const type::request::Transaction& tx);
+std::vector<type::bytes> getEncodedTransactionItems(
+    const type::request::Transaction& tx);
 type::bytes encodeTransactionFromItems(const std::vector<type::bytes>& items);
 }  // namespace rlp
 
