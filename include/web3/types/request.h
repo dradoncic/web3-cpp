@@ -5,7 +5,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "utils.h"
 #include "types/native.h"
 
 namespace web3::type::request
@@ -33,7 +32,7 @@ struct Transaction
     // Legacy Transaction
     Transaction(const uint256& nonce, const uint256& gasPrice, const uint256& gas,
                 const address& to, const address& from, const uint256& value,
-                const bytes& input = {})
+                const uint256& chainId, const bytes& input = {})
         : from(from),
           type(0),
           nonce(nonce),
@@ -41,7 +40,8 @@ struct Transaction
           gas(gas),
           to(to),
           value(value),
-          input(input)
+          input(input),
+          chainId(chainId)
     {
     }
 

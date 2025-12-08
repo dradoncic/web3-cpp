@@ -7,9 +7,9 @@
 #include <cryptopp/keccak.h>
 #include <cryptopp/oids.h>
 #include <cryptopp/osrng.h>
+#include <gmpxx.h>
 #include <secp256k1.h>
 #include <secp256k1_recovery.h>
-#include <gmpxx.h>
 
 #include <cctype>
 #include <stdexcept>
@@ -132,7 +132,7 @@ type::bytes concat(const type::bytes& a, const type::bytes& b)
  * std::string hash = keccak256(myData);
  * // hash = "0x..." (64 hex characters)
  */
-std::string keccak256(const type::bytes& data)
+type::bytes keccak256(const type::bytes& data)
 {
     CryptoPP::Keccak_256 hash;
 
@@ -140,10 +140,10 @@ std::string keccak256(const type::bytes& data)
     hash.Update(data.data(), data.size());
     hash.TruncatedFinal(digest.data(), digest.size());
 
-    return bytesToHex(digest);
+    return digest;
 }
 
-std::string privateKeyToPublicKey(const std::string& privateKey)
+type::bytes privateKeyToPublicKey(const std::string& privateKey)
 {
     auto privKey = hexToBytes(privateKey);
     if (privKey.size() != 32)
@@ -157,25 +157,25 @@ std::string privateKeyToPublicKey(const std::string& privateKey)
     secp256k1_pubkey pubkey;
     auto res = secp256k1_ec_pubkey_create(ctx, &pubkey, privKey.data());
 
-    type::bytes pub(65);
-    size_t publen = 65;
-    secp256k1_ec_pubkey_serialize(ctx, pub.data(), &publen, &pubkey, SECP256K1_EC_UNCOMPRESSED);
+    type::bytes pub(64);
+    size_t publen = 64;
+    secp256k1_ec_pubkey_serialize(ctx, pub.data(), &publen, &pubkey,
+                                  SECP256K1_EC_UNCOMPRESSED);
 
     secp256k1_context_destroy(ctx);
 
-    return bytesToHex(pub);
+    return pub;
 }
 
-type::address publicKeyToAddress(const std::string& publicKey)
+type::address publicKeyToAddress(const type::bytes& publicKey)
 {
-    auto pubBytes = hexToBytes(publicKey);
-    if (pubBytes.size() != 64)
+    if (publicKey.size() != 64)
         throw std::runtime_error("Invalid public key length.");
 
     CryptoPP::Keccak_256 hash;
 
     std::vector<uint8_t> digest(32);
-    hash.Update(pubBytes.data(), pubBytes.size());
+    hash.Update(publicKey.data(), publicKey.size());
     hash.TruncatedFinal(digest.data(), digest.size());
 
     type::address addr;
@@ -207,28 +207,28 @@ type::bytes uint256ToBytes(const type::uint256& value)
 namespace sign
 {
 
-Signature signHash(const std::string& privKey, const std::string& hash)
+Signature signHash(const std::string& privKey, const type::bytes& hash)
 {
     auto privBytes = hexToBytes(privKey);
     if (privKey.size() != 32)
         throw std::runtime_error("Invalid private key length!");
-    auto hashBytes = hexToBytes(hash);
-    if (hashBytes.size() != 32)
+    if (hash.size() != 32)
         throw std::runtime_error("Invalid private key length!");
 
-    secp256k1_context* ctx = secp256k1_context_create(
-        SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY
-    );
+    secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN |
+                                                      SECP256K1_CONTEXT_VERIFY);
 
     secp256k1_ecdsa_recoverable_signature sig;
-    secp256k1_ecdsa_sign_recoverable(ctx, &sig, hashBytes.data(), privBytes.data(), nullptr, nullptr);
+    secp256k1_ecdsa_sign_recoverable(ctx, &sig, hash.data(),
+                                     privBytes.data(), nullptr, nullptr);
 
     type::bytes compact(64);
     int recid;
 
-    secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, compact.data(), &recid, &sig);
+    secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, compact.data(),
+                                                            &recid, &sig);
 
-   secp256k1_context_destroy(ctx);
+    secp256k1_context_destroy(ctx);
 
     Signature res;
     res.r = bytesToHex(type::bytes(compact.begin(), compact.begin() + 32));
@@ -237,9 +237,29 @@ Signature signHash(const std::string& privKey, const std::string& hash)
 
     return res;
 }
+}  // namespace sign
+
+namespace rlp
+{
+
+type::bytes encodeUint256(const type::uint256& value)
+{
+    auto bytes = uint256ToBytes(value);
+    return encodeBytes(bytes);
+}
+
+type::bytes encodeAddress(const type::address& addr)
+{
+    return encodeBytes(std::vector<uint8_t>(addr.bytes.begin(), addr.bytes.end()));
+}
+
+type::bytes encodeAccessList(const std::vector<type::response::AccessList>& accessList)
+{
 
 }
 
+
+} // namespace rlp
 
 // type::bytes rlpEncode(const type::bytes& input)
 // {
@@ -295,6 +315,5 @@ Signature signHash(const std::string& privKey, const std::string& hash)
 //     out.insert(out.end(), encoded.begin(), encoded.end());
 //     return out;
 // }
-
 
 }  // namespace web3::utils

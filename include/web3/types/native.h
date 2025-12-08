@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "utils.h"
-
 namespace web3::type
 {
 
@@ -143,46 +141,29 @@ class address
    public:
     std::array<uint8_t, 20> bytes;
 
-    address() { bytes.fill(0); }
-
-    explicit address(const std::array<uint8_t, 20>& b) : bytes(b) {}
-
-    explicit address(const std::string& hex)
+    address()
     {
-        auto b = utils::hexToBytes(hex);
-        if (b.size() != 20)
-            throw std::runtime_error("Invalid address length");
-        std::copy(b.begin(), b.end(), bytes.begin());
+        bytes.fill(0);
     }
 
-    std::string toHex() const
+    explicit address(const std::array<uint8_t, 20>& b) : bytes(b)
     {
-        return utils::bytesToHex(std::vector<uint8_t>(bytes.begin(), bytes.end()));
     }
 
+    explicit address(const std::string& hex);
 
-    std::string toChecksumAddress() const
+    std::string toHex() const;
+
+    std::string toChecksumAddress() const;
+
+    bool operator==(const address& other) const
     {
-        std::string addr = web3::utils::removeHexPrefix(toHex());
-        std::string addrLower = addr;
-        std::transform(addrLower.begin(), addrLower.end(), addrLower.begin(), ::tolower);
-
-        auto hashHex = web3::utils::removeHexPrefix(web3::utils::keccak256(web3::utils::hexToBytes(addrLower)));
-
-        for (size_t i = 0; i < addr.size(); i++)
-        {
-            uint8_t hval = (hashHex[i] >= '0' && hashHex[i] <= '9') ? hashHex[i] - '0' : (tolower(hashHex[i]) - 'a' + 10);
-            if (hval >= 8)
-                addr[i] = toupper(addr[i]);
-            else
-                addr[i] = tolower(addr[i]);
-        }
-
-        return web3::utils::ensureHexPrefix(addr);
+        return bytes == other.bytes;
     }
-
-    bool operator==(const address& other) const { return bytes == other.bytes; }
-    bool operator!=(const address& other) const { return !(*this == other); }
+    bool operator!=(const address& other) const
+    {
+        return !(*this == other);
+    }
 };
 
 using bytes = std::vector<uint8_t>;
