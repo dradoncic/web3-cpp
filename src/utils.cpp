@@ -7,6 +7,8 @@
 #include <cryptopp/keccak.h>
 #include <cryptopp/oids.h>
 #include <cryptopp/osrng.h>
+#include <secp256k1.h>
+#include <secp256k1_recovery.h>
 #include <gmpxx.h>
 
 #include <cctype>
@@ -143,25 +145,25 @@ std::string keccak256(const type::bytes& data)
 
 std::string privateKeyToPublicKey(const std::string& privateKey)
 {
-    // auto privBytes = hexToBytes(privateKey);
-    // if (privBytes.size() != 32)
-    //     throw std::runtime_error("Invalid private key length!");
+    auto privKey = hexToBytes(privateKey);
+    if (privKey.size() != 32)
+        throw std::runtime_error("Invalid private key length!");
 
-    // CryptoPP::Integer privBigInt(privBytes.data(), privBytes.size());
+    secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);
 
-    // CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PrivateKey priv;
-    // priv.Initialize(CryptoPP::ASN1::secp256k1(), privBigInt);
+    if (!secp256k1_ec_seckey_verify(ctx, privKey.data()))
+        throw std::runtime_error("Invalide private key length!");
 
-    // CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PublicKey pub;
-    // priv.MakePublicKey(pub);
+    secp256k1_pubkey pubkey;
+    auto res = secp256k1_ec_pubkey_create(ctx, &pubkey, privKey.data());
 
-    // const CryptoPP::ECP::Point& Q = pub.GetPublicElement();
-    // std::vector<uint8_t> pubBytes;
-    // pubBytes.resize(64);
-    // Q.x.Encode(pubBytes.data(), 32);
-    // Q.y.Encode(pubBytes.data() + 32, 32);
+    type::bytes pub(65);
+    size_t publen = 65;
+    secp256k1_ec_pubkey_serialize(ctx, pub.data(), &publen, &pubkey, SECP256K1_EC_UNCOMPRESSED);
 
-    // return bytesToHex(pubBytes);
+    secp256k1_context_destroy(ctx);
+
+    return bytesToHex(pub);
 }
 
 type::address publicKeyToAddress(const std::string& publicKey)
@@ -207,7 +209,33 @@ namespace sign
 
 Signature signHash(const std::string& privKey, const std::string& hash)
 {
+    auto privBytes = hexToBytes(privKey);
+    if (privKey.size() != 32)
+        throw std::runtime_error("Invalid private key length!");
+    auto hashBytes = hexToBytes(hash);
+    if (hashBytes.size() != 32)
+        throw std::runtime_error("Invalid private key length!");
 
+    secp256k1_context* ctx = secp256k1_context_create(
+        SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY
+    );
+
+    secp256k1_ecdsa_recoverable_signature sig;
+    secp256k1_ecdsa_sign_recoverable(ctx, &sig, hashBytes.data(), privBytes.data(), nullptr, nullptr);
+
+    type::bytes compact(64);
+    int recid;
+
+    secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, compact.data(), &recid, &sig);
+
+   secp256k1_context_destroy(ctx);
+
+    Signature res;
+    res.r = bytesToHex(type::bytes(compact.begin(), compact.begin() + 32));
+    res.s = bytesToHex(type::bytes(compact.begin() + 32, compact.end()));
+    res.yParity = recid;
+
+    return res;
 }
 
 }
