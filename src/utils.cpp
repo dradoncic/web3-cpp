@@ -202,58 +202,60 @@ type::bytes uint256ToBytes(const type::uint256& value)
     return bytes;
 }
 
-type::bytes rlpEncode(const type::bytes& input)
-{
-    size_t len = input.size();
-    type::bytes out;
-    if (len == 0)
-        out.push_back(0x80);
-    else if (len == 1 && input[0] <= 0x7f)
-        out.push_back(input[0]);
-    else if (len <= 55)
-    {
-        out.push_back(0x80 + len);
-        out.insert(out.end(), input.begin(), input.end());
-    }
-    else
-    {
-        type::bytes lenBytes = uint256ToBytes(type::uint256(len));
-        // remove leading zeros
-        auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
-                                [](uint8_t b) { return b != 0; });
-        lenBytes = type::bytes(pos, lenBytes.end());
-        out.push_back(0xB7 + lenBytes.size());
-        out.insert(out.end(), lenBytes.begin(), lenBytes.end());
-        out.insert(out.end(), input.begin(), input.end());
-    }
-    return out;
-}
+// type::bytes rlpEncode(const type::bytes& input)
+// {
+//     size_t len = input.size();
+//     type::bytes out;
+//     if (len == 0)
+//         out.push_back(0x80);
+//     else if (len == 1 && input[0] <= 0x7f)
+//         out.push_back(input[0]);
+//     else if (len <= 55)
+//     {
+//         out.push_back(0x80 + len);
+//         out.insert(out.end(), input.begin(), input.end());
+//     }
+//     else
+//     {
+//         type::bytes lenBytes = uint256ToBytes(type::uint256(len));
+//         // remove leading zeros
+//         auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
+//                                 [](uint8_t b) { return b != 0; });
+//         lenBytes = type::bytes(pos, lenBytes.end());
+//         out.push_back(0xB7 + lenBytes.size());
+//         out.insert(out.end(), lenBytes.begin(), lenBytes.end());
+//         out.insert(out.end(), input.begin(), input.end());
+//     }
+//     return out;
+// }
 
-type::bytes rlpEncodeList(const std::vector<type::bytes>& inputs)
-{
-    type::bytes encoded;
-    for (const auto& item : inputs)
-    {
-        auto e = rlpEncode(item);
-        encoded.insert(encoded.end(), e.begin(), e.end());
-    }
+// type::bytes rlpEncodeList(const std::vector<type::bytes>& inputs)
+// {
+//     type::bytes encoded;
+//     for (const auto& item : inputs)
+//     {
+//         auto e = rlpEncode(item);
+//         encoded.insert(encoded.end(), e.begin(), e.end());
+//     }
 
-    size_t len = encoded.size();
-    type::bytes out;
-    if (len <= 55)
-    {
-        out.push_back(0xC0 + len);
-    }
-    else
-    {
-        type::bytes lenBytes = uint256ToBytes(type::uint256(len));
-        auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
-                                [](uint8_t b) { return b != 0; });
-        lenBytes = type::bytes(pos, lenBytes.end());
-        out.push_back(0xF7 + lenBytes.size());
-        out.insert(out.end(), lenBytes.begin(), lenBytes.end());
-    }
-    out.insert(out.end(), encoded.begin(), encoded.end());
-    return out;
-}
+//     size_t len = encoded.size();
+//     type::bytes out;
+//     if (len <= 55)
+//     {
+//         out.push_back(0xC0 + len);
+//     }
+//     else
+//     {
+//         type::bytes lenBytes = uint256ToBytes(type::uint256(len));
+//         auto pos = std::find_if(lenBytes.begin(), lenBytes.end(),
+//                                 [](uint8_t b) { return b != 0; });
+//         lenBytes = type::bytes(pos, lenBytes.end());
+//         out.push_back(0xF7 + lenBytes.size());
+//         out.insert(out.end(), lenBytes.begin(), lenBytes.end());
+//     }
+//     out.insert(out.end(), encoded.begin(), encoded.end());
+//     return out;
+// }
+
+
 }  // namespace web3::utils
