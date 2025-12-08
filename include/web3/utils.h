@@ -67,7 +67,6 @@ struct Signature
     std::string r;
     std::string s;
     uint8_t yParity;
-    uint8_t v;
 };
 
 Signature signHash(const std::string& privKey, const std::string& hash);

@@ -143,25 +143,25 @@ std::string keccak256(const type::bytes& data)
 
 std::string privateKeyToPublicKey(const std::string& privateKey)
 {
-    auto privBytes = hexToBytes(privateKey);
-    if (privBytes.size() != 32)
-        throw std::runtime_error("Invalid private key length!");
+    // auto privBytes = hexToBytes(privateKey);
+    // if (privBytes.size() != 32)
+    //     throw std::runtime_error("Invalid private key length!");
 
-    CryptoPP::Integer privBigInt(privBytes.data(), privBytes.size());
+    // CryptoPP::Integer privBigInt(privBytes.data(), privBytes.size());
 
-    CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PrivateKey priv;
-    priv.Initialize(CryptoPP::ASN1::secp256k1(), privBigInt);
+    // CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PrivateKey priv;
+    // priv.Initialize(CryptoPP::ASN1::secp256k1(), privBigInt);
 
-    CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PublicKey pub;
-    priv.MakePublicKey(pub);
+    // CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::PublicKey pub;
+    // priv.MakePublicKey(pub);
 
-    const CryptoPP::ECP::Point& Q = pub.GetPublicElement();
-    std::vector<uint8_t> pubBytes;
-    pubBytes.resize(64);
-    Q.x.Encode(pubBytes.data(), 32);
-    Q.y.Encode(pubBytes.data() + 32, 32);
+    // const CryptoPP::ECP::Point& Q = pub.GetPublicElement();
+    // std::vector<uint8_t> pubBytes;
+    // pubBytes.resize(64);
+    // Q.x.Encode(pubBytes.data(), 32);
+    // Q.y.Encode(pubBytes.data() + 32, 32);
 
-    return bytesToHex(pubBytes);
+    // return bytesToHex(pubBytes);
 }
 
 type::address publicKeyToAddress(const std::string& publicKey)
@@ -201,6 +201,17 @@ type::bytes uint256ToBytes(const type::uint256& value)
 
     return bytes;
 }
+
+namespace sign
+{
+
+Signature signHash(const std::string& privKey, const std::string& hash)
+{
+
+}
+
+}
+
 
 // type::bytes rlpEncode(const type::bytes& input)
 // {
