@@ -20,6 +20,10 @@ class uint256
     {
         mpz_set_ui(v.get_mpz_t(), x);
     }
+    uint256(uint8_t x)
+    {
+        mpz_set_ui(v.get_mpz_t(), x);
+    }
     uint256(const std::string& s, int base = 10) : v(s, base)
     {
     }

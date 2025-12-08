@@ -12,7 +12,6 @@ namespace web3::type::request
 
 struct Transaction
 {
-
     uint8_t type;
     uint256 nonce;
     address to;
@@ -26,13 +25,14 @@ struct Transaction
     uint256 maxFeePerBlobGas;
     std::vector<response::AccessList> accessList;
     std::vector<web3::type::uint256> blobVersionedHashes;
-    web3::type::uint256 chainId;
+    uint256 chainId;
     std::vector<response::AuthorizationList> authorizationList;
 
     // Legacy Transaction
-    Transaction(const uint256& nonce, const uint256& gasPrice, const uint256& gas,
-                const address& to, const address& from, const uint256& value,
-                const uint256& chainId, const bytes& input = {})
+    Transaction(const uint256& nonce, const uint256& gasPrice,
+                const uint256& gas, const address& to, const address& from,
+                const uint256& value, const uint256& chainId,
+                const bytes& input = {})
         : from(from),
           type(0),
           nonce(nonce),
@@ -46,8 +46,9 @@ struct Transaction
     }
 
     // EIP-2930 Transaction
-    Transaction(const uint256& nonce, const uint256& gasPrice, const uint256& gas,
-                const address& to, const address& from, const uint256& value,
+    Transaction(const uint256& nonce, const uint256& gasPrice,
+                const uint256& gas, const address& to, const address& from,
+                const uint256& value,
                 const std::vector<response::AccessList>& accessList,
                 const uint256& chainId, const bytes& input = {})
         : from(from),
@@ -108,13 +109,14 @@ struct Transaction
     }
 
     // EIP-7702 Transaction
-    Transaction(const uint256& nonce, const uint256& gas, const address& to,
-                const address& from, const uint256& value,
-                const std::vector<response::AccessList>& accessList,
-                const uint256& chainId, const uint256& maxPriorityFeePerGas,
-                const uint256& maxFeePerGas,
-                const std::vector<response::AuthorizationList>& authorizationList,
-                const bytes& input = {})
+    Transaction(
+        const uint256& nonce, const uint256& gas, const address& to,
+        const address& from, const uint256& value,
+        const std::vector<response::AccessList>& accessList,
+        const uint256& chainId, const uint256& maxPriorityFeePerGas,
+        const uint256& maxFeePerGas,
+        const std::vector<response::AuthorizationList>& authorizationList,
+        const bytes& input = {})
         : from(from),
           type(4),
           chainId(chainId),
@@ -154,7 +156,7 @@ inline void to_json(nlohmann::json& j, const Address& b)
 struct Balance
 {
     address address;
-    uint256 balance; // amount of wei
+    uint256 balance;  // amount of wei
 };
 
 inline void to_json(nlohmann::json& j, const Balance& b)

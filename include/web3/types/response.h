@@ -3,9 +3,11 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
+
 #include "types/native.h"
 
-namespace web3::type::response {
+namespace web3::type::response
+{
 
 struct AccessList
 {
@@ -21,10 +23,10 @@ inline void from_json(const nlohmann::json& j, AccessList& a)
 
 struct AuthorizationList
 {
-    std::string chainId;
-    std::string nonce;
-    std::string address;
-    std::string yParity;
+    type::uint256 chainId;
+    type::uint256 nonce;
+    type::address address;
+    uint8_t yParity;
     std::string r;
     std::string s;
 };
@@ -33,8 +35,8 @@ inline void from_json(const nlohmann::json& j, AuthorizationList& a)
 {
     a.chainId = j.value("chainId", "");
     a.nonce = j.value("nonce", "");
-    a.address = j.value("address", "");
-    a.yParity = j.value("yParity", "");
+    a.address = address(j.value("address", ""));
+    a.yParity = j.at("yParity").get<uint8_t>();
     a.r = j.value("r", "");
     a.s = j.value("s", "");
 }
