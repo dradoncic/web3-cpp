@@ -4,19 +4,8 @@
 #include <vector>
 
 #include "types/response.h"
-
-namespace web3::type  // forward declaration
-{
-struct uint256;
-class address;
-using bytes = std::vector<uint8_t>;
-}  // namespace web3::type
-
-namespace web3::type::request  // forward declaration
-{
-class Transaction;
-class Address;
-}  // namespace web3::type::request
+#include "types/native.h"
+#include "types/request.h"
 
 namespace web3::utils
 {
@@ -49,18 +38,16 @@ type::bytes concat(const web3::type::bytes& a, const web3::type::bytes& b);
 type::bytes uint256ToBytes(const type::uint256& value);
 
 // Keccak256 & secp256k1
-std::string keccak256(const web3::type::bytes& data);
+type::bytes keccak256(const web3::type::bytes& data);
 
 // Address
-std::string privateKeyToPublicKey(const std::string& privateKey);
-type::address publicKeyToAddress(const std::string& publicKey);
+type::bytes privateKeyToPublicKey(const std::string& privateKey);
+type::address publicKeyToAddress(const type::bytes& publicKey);
 type::address privateKeyToAddress(const std::string& privateKey);
 
 // Signing
 namespace sign
 {
-
-std::string computeHash(const type::request::Transaction& tx);
 
 struct Signature
 {
@@ -69,14 +56,14 @@ struct Signature
     uint8_t yParity;
 };
 
-Signature signHash(const std::string& privKey, const std::string& hash);
+Signature signHash(const std::string& privKey, const type::bytes& hash);
 
 std::string buildSignedLegacy(const type::request::Transaction& tx,
                               const Signature& sig);
 std::string buildSignedTyped(const type::request::Transaction& tx,
                              const Signature& sig);
 
-type::bytes signTransaction(const type::request::Transaction& tx,
+type::bytes signTransaction(const std::vector<type::bytes>& items,
                             const std::string& privKey);
 }  // namespace sign
 
@@ -93,13 +80,14 @@ type::bytes encodeAccessList(
 type::bytes encodeAuthorizationList(
     const std::vector<type::response::AuthorizationList>& authList);
 
-type::bytes encodeLegacyTransaction(const type::request::Transaction& tx);
-type::bytes encodeEIP2930Transaction(const type::request::Transaction& tx);
-type::bytes encodeEIP1559Transaction(const type::request::Transaction& tx);
-type::bytes encodeEIP4844Transaction(const type::request::Transaction& tx);
-type::bytes encodeEIP7702Tranasction(const type::request::Transaction& tx);
+std::vector<type::bytes> encodeLegacyTransaction(const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP2930Transaction(const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP1559Transaction(const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP4844Transaction(const type::request::Transaction& tx);
+std::vector<type::bytes> encodeEIP7702Transaction(const type::request::Transaction& tx);
 
-type::bytes encodeTransaction(const type::request::Transaction& tx);
+std::vector<type::bytes> getEncodedTransactionItems(const type::request::Transaction& tx);
+type::bytes encodeTransactionFromItems(const std::vector<type::bytes>& items);
 }  // namespace rlp
 
 // web3::type::bytes rlpEncode(const web3::type::bytes& input);
@@ -107,9 +95,9 @@ type::bytes encodeTransaction(const type::request::Transaction& tx);
 // inputs);
 
 // ABI Encoding Helpers
-std::string encodeFunctionSelector(const std::string& signature);
-std::string encodeUint(web3::type::uint256& value);
-std::string encodeAddress(const web3::type::address& address);
-std::string encodeBool(bool val);
-std::string encodeBytes(type::bytes bytes);
+type::bytes encodeFunctionSelector(const std::string& signature);
+type::bytes encodeUint(web3::type::uint256& value);
+type::bytes encodeAddress(const web3::type::address& address);
+type::bytes encodeBool(bool val);
+type::bytes encodeBytes(type::bytes bytes);
 }  // namespace web3::utils

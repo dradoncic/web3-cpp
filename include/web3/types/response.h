@@ -3,19 +3,19 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
+#include "types/native.h"
 
-namespace web3::type::response
-{
+namespace web3::type::response {
 
 struct AccessList
 {
-    std::string address;
+    type::address address;
     std::vector<std::string> storageKeys = {};
 };
 
 inline void from_json(const nlohmann::json& j, AccessList& a)
 {
-    a.address = j.value("address", "");
+    a.address = address(j.value("address", ""));
     a.storageKeys = j.value("storageKeys", std::vector<std::string>{});
 }
 
